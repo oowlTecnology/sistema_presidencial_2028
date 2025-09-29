@@ -2,9 +2,8 @@ import 'reflect-metadata';
 import express from 'express';
 import cors from 'cors';
 import { config } from 'dotenv';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import sql from 'mssql';
+import routes from './routes';
+import { initializeDatabase } from './config/database';
 
 // Cargar variables de entorno
 config();
@@ -20,22 +19,8 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Configuración de SQL Server
-const sqlConfig = {
-  user: process.env.DB_USERNAME || 'sa',
-  password: process.env.DB_PASSWORD || '!@Qwerty*',
-  database: process.env.DB_DATABASE || 'gana_tu_colegio',
-  server: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '1433'),
-  options: {
-    encrypt: false,
-    trustServerCertificate: true
-  }
-};
-
-// Base de datos simulada en memoria (para pruebas)
-let users: any[] = [];
-let nextId = 1;
+// Rutas principales (montamos todas las rutas bajo /api)
+app.use('/api', routes);
 
 // Ruta de bienvenida
 app.get('/', (req, res) => {
@@ -44,125 +29,22 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     endpoints: {
       auth: '/api/auth',
+      users: '/api/users',
+      provincias: '/api/provincias',
+      municipios: '/api/municipios',
       health: '/api/health'
     }
   });
 });
 
-// Ruta de salud del servidor
+// Ruta de salud del servidor (queda también en /api/health por routes)
 app.get('/api/health', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Servidor funcionando correctamente',
     timestamp: new Date().toISOString(),
     version: '1.0.0',
     database: 'SQL Server'
   });
-});
-
-// RUTAS DE AUTENTICACIÓN
-
-// Registro
-app.post('/api/auth/register', async (req, res) => {
-  try {
-    const { email, password, firstName, lastName, role } = req.body;
-
-    // Verificar si el usuario ya existe
-    const existingUser = users.find(u => u.email === email);
-    if (existingUser) {
-      return res.status(400).json({ message: 'El usuario ya existe' });
-    }
-
-    // Hash de la contraseña
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Crear nuevo usuario
-    const newUser = {
-      id: nextId++,
-      email,
-      password: hashedPassword,
-      firstName,
-      lastName,
-      role: role || 'recinto',
-      isActive: true,
-      createdAt: new Date()
-    };
-
-    users.push(newUser);
-
-    // Crear token JWT
-    const jwtSecret = process.env.JWT_SECRET || 'default-secret-key-for-development';
-    const token = jwt.sign(
-      { userId: newUser.id, email: newUser.email, role: newUser.role },
-      jwtSecret,
-      { expiresIn: '24h' }
-    );
-
-    // Remover la contraseña de la respuesta
-    const { password: _, ...userWithoutPassword } = newUser;
-
-    res.status(201).json({
-      message: 'Usuario registrado exitosamente',
-      user: userWithoutPassword,
-      token
-    });
-  } catch (error) {
-    console.error('Error en registro:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
-  }
-});
-
-// Login
-app.post('/api/auth/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email y contraseña son requeridos' });
-    }
-
-    const user = users.find(u => u.email === email && u.isActive);
-    if (!user) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
-    }
-
-    // Verificar contraseña
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
-    }
-
-    // Crear token JWT
-    const jwtSecret = process.env.JWT_SECRET || 'default-secret-key-for-development';
-    const token = jwt.sign(
-      { userId: user.id, email: user.email, role: user.role },
-      jwtSecret,
-      { expiresIn: '24h' }
-    );
-
-    // Remover la contraseña de la respuesta
-    const { password: _, ...userWithoutPassword } = user;
-
-    res.json({
-      message: 'Login exitoso',
-      user: userWithoutPassword,
-      token
-    });
-  } catch (error) {
-    console.error('Error en login:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
-  }
-});
-
-// Obtener usuarios (para el dashboard)
-app.get('/api/users', (req, res) => {
-  try {
-    // Filtrar contraseñas de la respuesta
-    const usersWithoutPasswords = users.map(({ password, ...user }) => user);
-    res.json(usersWithoutPasswords);
-  } catch (error) {
-    console.error('Error al obtener usuarios:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
-  }
 });
 
 // Middleware de manejo de errores
@@ -182,13 +64,23 @@ app.use('*', (req, res) => {
   });
 });
 
-// Inicializar servidor
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor ejecutándose en http://localhost:${PORT}`);
-  console.log(`📊 Entorno: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🗄️  Base de datos: ${process.env.DB_DATABASE || 'gana_tu_colegio'} (SQL Server)`);
-  console.log(`🔐 Autenticación: Habilitada`);
-});
+// Inicializar servidor (conexión a base de datos primero)
+const startServer = async () => {
+  try {
+    await initializeDatabase();
+    app.listen(PORT, () => {
+      console.log(`🚀 Servidor ejecutándose en http://localhost:${PORT}`);
+      console.log(`📊 Entorno: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`🗄️  Base de datos: ${process.env.DB_DATABASE || 'gana_tu_colegio'} (SQL Server)`);
+      console.log(`🔐 Autenticación: Habilitada`);
+    });
+  } catch (error) {
+    console.error('❌ Error al iniciar el servidor:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 export default app;
 
