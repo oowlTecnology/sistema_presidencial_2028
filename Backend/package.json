@@ -1,0 +1,47 @@
+{
+  "name": "gana-tu-colegio-backend",
+  "version": "1.0.0",
+  "description": "Backend para plataforma de coordinación política territorial",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "migration:generate": "typeorm migration:generate",
+    "migration:run": "typeorm migration:run",
+    "migration:revert": "typeorm migration:revert"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mssql": "^10.0.4",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.17"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/mssql": "^9.1.8",
+    "@types/node": "^20.10.5",
+    "nodemon": "^3.0.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "typeorm",
+    "mysql",
+    "politics",
+    "coordination"
+  ],
+  "author": "Tu nombre",
+  "license": "MIT"
+}

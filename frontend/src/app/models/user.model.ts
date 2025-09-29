@@ -1,0 +1,55 @@
+export enum UserRole {
+  PROVINCIAL = 'provincial',
+  MUNICIPAL = 'municipal',
+  CIRCUNSCRIPCION = 'circunscripcion',
+  COLEGIO = 'colegio',
+  RECINTO = 'recinto'
+}
+
+export interface User {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: UserRole;
+  isActive: boolean;
+  phoneNumber?: string;
+  address?: string;
+  provinciaId?: number;
+  municipioId?: number;
+  circunscripcionId?: number;
+  colegioId?: number;
+  recintoId?: number;
+  provincia?: any;
+  municipio?: any;
+  circunscripcion?: any;
+  colegio?: any;
+  recinto?: any;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role?: UserRole;
+  phoneNumber?: string;
+  address?: string;
+  provinciaId?: number;
+  municipioId?: number;
+  colegioId?: number;
+  recintoId?: number;
+}
+
+export interface AuthResponse {
+  message: string;
+  user: User;
+  token: string;
+}
