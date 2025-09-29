@@ -171,102 +171,30 @@ import { ColegioService, Colegio } from '../../services/colegio.service'
         </div>
 
         <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+          <!-- Fila superior: Nombre y Apellido -->
           <div class="form-row">
             <mat-form-field appearance="outline" class="half-width">
               <mat-label>Nombre</mat-label>
               <input matInput formControlName="firstName" required />
-              <mat-error
-                *ngIf="userForm.get('firstName')?.hasError('required')"
-              >
+              <mat-error *ngIf="userForm.get('firstName')?.hasError('required')">
                 El nombre es requerido
               </mat-error>
             </mat-form-field>
 
-          <!-- Dropdown de colegios solo si el usuario actual es municipal y está agregando un usuario de colegio -->
-          <mat-form-field
-            appearance="outline"
-            class="full-width"
-            *ngIf="
-              currentUser?.role === 'municipal' &&
-              userForm.get('role')?.value === 'colegio'
-            "
-          >
-            <mat-label>Colegio</mat-label>
-            <mat-select formControlName="colegioId">
-              <mat-option *ngIf="colegios.length === 0" disabled>
-                No hay colegios disponibles
-              </mat-option>
-              <mat-option
-                *ngFor="let colegio of colegios"
-                [value]="colegio.IDColegio"
-              >
-                {{ colegio.Descripcion }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Apellido</mat-label>
-            <input matInput formControlName="lastName" required />
-            <mat-error *ngIf="userForm.get('lastName')?.hasError('required')">
-              El apellido es requerido
-            </mat-error>
-          </mat-form-field>
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Apellido</mat-label>
+              <input matInput formControlName="lastName" required />
+              <mat-error *ngIf="userForm.get('lastName')?.hasError('required')">
+                El apellido es requerido
+              </mat-error>
+            </mat-form-field>
           </div>
 
-          <!-- Campo Email -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Email</mat-label>
-            <input matInput type="email" formControlName="email" required />
-            <mat-error *ngIf="userForm.get('email')?.hasError('required')">
-              El email es requerido
-            </mat-error>
-            <mat-error *ngIf="userForm.get('email')?.hasError('email')">
-              Ingresa un email válido
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field
-            appearance="outline"
-            class="full-width"
-            *ngIf="!isEditing"
-          >
-            <mat-label>Contraseña</mat-label>
-            <input
-              matInput
-              [type]="hidePassword ? 'password' : 'text'"
-              formControlName="password"
-              required
-            />
-            <button
-              mat-icon-button
-              matSuffix
-              (click)="hidePassword = !hidePassword"
-              type="button"
-            >
-              <mat-icon>{{
-                hidePassword ? 'visibility_off' : 'visibility'
-              }}</mat-icon>
-            </button>
-            <mat-error *ngIf="userForm.get('password')?.hasError('required')">
-              La contraseña es requerida
-            </mat-error>
-            <mat-error *ngIf="userForm.get('password')?.hasError('minlength')">
-              La contraseña debe tener al menos 6 caracteres
-            </mat-error>
-          </mat-form-field>
-
+          <!-- Rol -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Rol</mat-label>
-            <mat-select
-              formControlName="role"
-              required
-              (selectionChange)="onRoleChange($event.value)"
-            >
-              <mat-option
-                *ngFor="let role of availableRoles"
-                [value]="role.value"
-              >
+            <mat-select formControlName="role" required (selectionChange)="onRoleChange($event.value)">
+              <mat-option *ngFor="let role of availableRoles" [value]="role.value">
                 {{ role.label }}
               </mat-option>
             </mat-select>
@@ -275,29 +203,56 @@ import { ColegioService, Colegio } from '../../services/colegio.service'
             </mat-error>
           </mat-form-field>
 
-          <!-- Dropdown de municipios solo si el usuario actual es provincial y está agregando un usuario municipal -->
+          <!-- Debajo de Rol: Municipio (si provincial crea municipal) -->
           <mat-form-field
             appearance="outline"
             class="full-width"
-            *ngIf="
-              currentUser?.role === 'provincial' &&
-              userForm.get('role')?.value === 'municipal'
-            "
+            *ngIf="currentUser?.role === 'provincial' && userForm.get('role')?.value === 'municipal'"
           >
             <mat-label>Municipio</mat-label>
             <mat-select formControlName="municipioId">
-              <mat-option *ngIf="municipios.length === 0" disabled>
-                No hay municipios disponibles
-              </mat-option>
-              <mat-option
-                *ngFor="let municipio of municipios"
-                [value]="municipio.ID"
-              >
+              <mat-option *ngIf="municipios.length === 0" disabled>No hay municipios disponibles</mat-option>
+              <mat-option *ngFor="let municipio of municipios" [value]="municipio.ID">
                 {{ municipio.Descripcion }}
               </mat-option>
             </mat-select>
           </mat-form-field>
 
+          <!-- Debajo de Rol: Colegio (si municipal crea colegio) -->
+          <mat-form-field
+            appearance="outline"
+            class="full-width"
+            *ngIf="currentUser?.role === 'municipal' && userForm.get('role')?.value === 'colegio'"
+          >
+            <mat-label>Colegio</mat-label>
+            <mat-select formControlName="colegioId">
+              <mat-option *ngIf="colegios.length === 0" disabled>No hay colegios disponibles</mat-option>
+              <mat-option *ngFor="let colegio of colegios" [value]="colegio.IDColegio">
+                {{ colegio.CodigoColegio }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Email -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" required />
+            <mat-error *ngIf="userForm.get('email')?.hasError('required')">El email es requerido</mat-error>
+            <mat-error *ngIf="userForm.get('email')?.hasError('email')">Ingresa un email válido</mat-error>
+          </mat-form-field>
+
+          <!-- Contraseña (solo crear) -->
+          <mat-form-field appearance="outline" class="full-width" *ngIf="!isEditing">
+            <mat-label>Contraseña</mat-label>
+            <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" required />
+            <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="userForm.get('password')?.hasError('required')">La contraseña es requerida</mat-error>
+            <mat-error *ngIf="userForm.get('password')?.hasError('minlength')">La contraseña debe tener al menos 6 caracteres</mat-error>
+          </mat-form-field>
+
+          <!-- Teléfono y Dirección -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Teléfono</mat-label>
             <input matInput type="tel" formControlName="phoneNumber" />

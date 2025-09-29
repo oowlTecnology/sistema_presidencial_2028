@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment'
 export interface Colegio {
   IDColegio: number
   Descripcion: string
+  CodigoColegio: string
   IDMunicipio: number
 }
 
