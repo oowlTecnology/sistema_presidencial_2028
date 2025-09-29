@@ -1,3 +1,10 @@
+/* Asegurar que el panel de Angular Material (mat-select, menus, etc.)
+   esté por encima del overlay personalizado (.dialog-overlay con z-index: 2000) */
+.cdk-overlay-container,
+.cdk-overlay-pane {
+  z-index: 3000 !important;
+}
+
 /* You can add global styles to this file, and also import other style files */
 
 /* Global styles */

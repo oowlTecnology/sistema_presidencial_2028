@@ -20,6 +20,7 @@ export interface User {
   circunscripcionId?: number;
   colegioId?: number;
   recintoId?: number;
+  createdByUserId?: number;
   provincia?: any;
   municipio?: any;
   circunscripcion?: any;

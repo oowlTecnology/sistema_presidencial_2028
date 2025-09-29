@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import {
   FormBuilder,
@@ -22,6 +22,7 @@ import { AuthService } from '../../services/auth.service'
 import { UserService } from '../../services/user.service'
 import { User, UserRole, RegisterRequest } from '../../models/user.model'
 import { MunicipioService, Municipio } from '../../services/municipio.service'
+import { ColegioService, Colegio } from '../../services/colegio.service'
 
 @Component({
   selector: 'app-users',
@@ -181,15 +182,39 @@ import { MunicipioService, Municipio } from '../../services/municipio.service'
               </mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Apellido</mat-label>
-              <input matInput formControlName="lastName" required />
-              <mat-error *ngIf="userForm.get('lastName')?.hasError('required')">
-                El apellido es requerido
-              </mat-error>
-            </mat-form-field>
+          <!-- Dropdown de colegios solo si el usuario actual es municipal y está agregando un usuario de colegio -->
+          <mat-form-field
+            appearance="outline"
+            class="full-width"
+            *ngIf="
+              currentUser?.role === 'municipal' &&
+              userForm.get('role')?.value === 'colegio'
+            "
+          >
+            <mat-label>Colegio</mat-label>
+            <mat-select formControlName="colegioId">
+              <mat-option *ngIf="colegios.length === 0" disabled>
+                No hay colegios disponibles
+              </mat-option>
+              <mat-option
+                *ngFor="let colegio of colegios"
+                [value]="colegio.IDColegio"
+              >
+                {{ colegio.Descripcion }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Apellido</mat-label>
+            <input matInput formControlName="lastName" required />
+            <mat-error *ngIf="userForm.get('lastName')?.hasError('required')">
+              El apellido es requerido
+            </mat-error>
+          </mat-form-field>
           </div>
 
+          <!-- Campo Email -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Email</mat-label>
             <input matInput type="email" formControlName="email" required />
@@ -261,18 +286,16 @@ import { MunicipioService, Municipio } from '../../services/municipio.service'
           >
             <mat-label>Municipio</mat-label>
             <mat-select formControlName="municipioId">
-              <ng-container *ngIf="municipios.length > 0; else noMunicipios">
-                <mat-option
-                  *ngFor="let municipio of municipios"
-                  [value]="municipio.ID"
-                >
-                  {{ municipio.Descripcion }}
-                </mat-option>
-              </ng-container>
+              <mat-option *ngIf="municipios.length === 0" disabled>
+                No hay municipios disponibles
+              </mat-option>
+              <mat-option
+                *ngFor="let municipio of municipios"
+                [value]="municipio.ID"
+              >
+                {{ municipio.Descripcion }}
+              </mat-option>
             </mat-select>
-            <ng-template #noMunicipios>
-              <mat-option disabled>No hay municipios disponibles</mat-option>
-            </ng-template>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
@@ -461,6 +484,112 @@ import { MunicipioService, Municipio } from '../../services/municipio.service'
   ],
 })
 export class UsersComponent implements OnInit {
+  // Estado y datos
+  municipios: Municipio[] = []
+  colegios: Colegio[] = []
+  users: User[] = []
+  displayedColumns: string[] = ['name', 'email', 'role', 'status', 'createdAt', 'actions']
+  currentUser: User | null = null
+  isLoading = false
+  showDialog = false
+  isEditing = false
+  isSubmitting = false
+  hidePassword = true
+  selectedUser: User | null = null
+
+  // Formulario
+  userForm: FormGroup
+  availableRoles: { value: string; label: string }[] = []
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private userService: UserService,
+    private municipioService: MunicipioService,
+    private colegioService: ColegioService,
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
+  ) {
+    this.userForm = this.fb.group({
+      firstName: ['', [Validators.required]],
+      lastName: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      role: ['', [Validators.required]],
+      municipioId: [''],
+      colegioId: [''],
+      phoneNumber: [''],
+      address: [''],
+    })
+  }
+
+  ngOnInit() {
+    this.currentUser = this.authService.getCurrentUser()
+    this.setupAvailableRoles()
+    this.loadUsers()
+  }
+
+  setupAvailableRoles() {
+    if (!this.currentUser) return
+
+    const allRoles = [
+      { value: UserRole.MUNICIPAL, label: 'Coordinador Municipal' },
+      { value: UserRole.COLEGIO, label: 'Coordinador de Colegio' },
+      { value: UserRole.RECINTO, label: 'Coordinador de Recinto' },
+    ]
+
+    if (this.currentUser.role === UserRole.PROVINCIAL) {
+      this.availableRoles = allRoles.filter((r) => r.value === UserRole.MUNICIPAL)
+    } else if (this.currentUser.role === UserRole.MUNICIPAL) {
+      this.availableRoles = allRoles.filter((r) => r.value === UserRole.COLEGIO)
+    } else if (this.currentUser.role === UserRole.COLEGIO) {
+      this.availableRoles = allRoles.filter((r) => r.value === UserRole.RECINTO)
+    } else {
+      this.availableRoles = []
+    }
+  }
+
+  get canDeleteUsers(): boolean {
+    return this.currentUser?.role === UserRole.PROVINCIAL
+  }
+
+  loadUsers() {
+    this.isLoading = true
+    this.userService.getUsers().subscribe({
+      next: (users) => {
+        this.users = users
+        this.isLoading = false
+      },
+      error: (error: any) => {
+        console.error('Error al cargar usuarios:', error)
+        this.isLoading = false
+        this.snackBar.open('Error al cargar usuarios', 'Cerrar', { duration: 3000 })
+      },
+    })
+  }
+
+  openAddUserDialog() {
+    console.log('Abriendo modal de usuario. Rol actual:', this.currentUser?.role)
+    this.isEditing = false
+    this.selectedUser = null
+    this.userForm.reset()
+
+    if (this.currentUser?.role === 'provincial') {
+      this.userForm.patchValue({ role: 'municipal' })
+      this.onRoleChange('municipal')
+    } else if (this.currentUser?.role === 'municipal') {
+      this.userForm.patchValue({ role: 'colegio' })
+      console.log('Usuario municipal con municipioId =', this.currentUser.municipioId)
+      this.onRoleChange('colegio')
+    } else {
+      this.userForm.patchValue({ role: this.availableRoles[0]?.value })
+      this.municipios = []
+      this.colegios = []
+    }
+
+    this.showDialog = true
+    this.userForm.get('password')?.updateValueAndValidity()
+  }
   editUser(user: User) {
     this.isEditing = true
     this.selectedUser = user
@@ -490,152 +619,52 @@ export class UsersComponent implements OnInit {
     } else {
       value = event
     }
-    if (
-      this.currentUser?.role === 'provincial' &&
-      value === 'municipal' &&
-      this.currentUser.provinciaId
-    ) {
-      this.municipioService
-        .getMunicipiosByProvincia(this.currentUser.provinciaId)
-        .subscribe({
-          next: (data: Municipio[]) => (this.municipios = data),
-          error: () => (this.municipios = []),
-        })
-    } else {
-      this.municipios = []
-    }
-  }
-  municipios: Municipio[] = []
-  users: User[] = []
-  displayedColumns: string[] = [
-    'name',
-    'email',
-    'role',
-    'status',
-    'createdAt',
-    'actions',
-  ]
-  currentUser: User | null = null
-  isLoading = false
-  showDialog = false
-  isEditing = false
-  isSubmitting = false
-  hidePassword = true
-  selectedUser: User | null = null
+    // Limpiar validaciones dinámicas
+    this.userForm.get('municipioId')?.clearValidators()
+    this.userForm.get('colegioId')?.clearValidators()
 
-  userForm: FormGroup
-  availableRoles: { value: string; label: string }[] = []
-
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private userService: UserService,
-    private municipioService: MunicipioService,
-    private snackBar: MatSnackBar
-  ) {
-    this.userForm = this.fb.group({
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      role: ['', [Validators.required]],
-      municipioId: ['', [Validators.required]],
-      phoneNumber: [''],
-      address: [''],
-    })
-  }
-
-  ngOnInit() {
-    this.currentUser = this.authService.getCurrentUser()
-    this.setupAvailableRoles()
-    this.loadUsers()
-  }
-
-  setupAvailableRoles() {
-    if (!this.currentUser) return
-
-    const allRoles = [
-      { value: UserRole.MUNICIPAL, label: 'Coordinador Municipal' },
-      { value: UserRole.COLEGIO, label: 'Coordinador de Colegio' },
-      { value: UserRole.RECINTO, label: 'Coordinador de Recinto' },
-    ]
-
-    // Si el usuario es provincial, solo puede crear municipales
-    if (this.currentUser.role === UserRole.PROVINCIAL) {
-      this.availableRoles = allRoles.filter(
-        (role) => role.value === UserRole.MUNICIPAL
-      )
-    } else if (this.currentUser.role === UserRole.MUNICIPAL) {
-      this.availableRoles = allRoles.filter(
-        (role) =>
-          role.value === UserRole.COLEGIO || role.value === UserRole.RECINTO
-      )
-    } else if (this.currentUser.role === UserRole.COLEGIO) {
-      this.availableRoles = allRoles.filter(
-        (role) => role.value === UserRole.RECINTO
-      )
-    } else {
-      this.availableRoles = []
-    }
-  }
-
-  get canDeleteUsers(): boolean {
-    return this.currentUser?.role === UserRole.PROVINCIAL
-  }
-
-  loadUsers() {
-    this.isLoading = true
-    this.userService.getUsers().subscribe({
-      next: (users) => {
-        this.users = users
-        this.isLoading = false
-      },
-      error: (error) => {
-        console.error('Error al cargar usuarios:', error)
-        this.isLoading = false
-        this.snackBar.open('Error al cargar usuarios', 'Cerrar', {
-          duration: 3000,
-        })
-      },
-    })
-  }
-
-  openAddUserDialog() {
-    console.log(
-      'Abriendo modal de usuario. Rol actual:',
-      this.currentUser?.role
-    )
-    console.log('onRoleChange llamado con:', event)
-    this.isEditing = false
-    this.selectedUser = null
-    this.userForm.reset()
-    // Si el usuario actual es provincial, forzar rol municipal y cargar municipios
-    if (this.currentUser?.role === 'provincial') {
-      this.userForm.patchValue({ role: 'municipal' })
-      if (this.currentUser.provinciaId !== undefined) {
+    // Caso 1: Provincial creando Municipal -> cargar municipios y requerir municipioId
+    if (this.currentUser?.role === 'provincial' && value === 'municipal') {
+      this.userForm.get('municipioId')?.setValidators([Validators.required])
+      if (this.currentUser.provinciaId) {
         this.municipioService
           .getMunicipiosByProvincia(this.currentUser.provinciaId)
           .subscribe({
             next: (data: Municipio[]) => {
-              this.municipios = data
-              console.log('Municipios cargados al abrir modal:', data)
+              this.municipios = [...data]
+              this.cdr.detectChanges()
             },
-            error: () => {
-              this.municipios = []
-              console.log('Error al cargar municipios al abrir modal')
+            error: () => (this.municipios = []),
+          })
+      }
+      this.colegios = []
+    }
+
+    // Caso 2: Municipal creando Colegio -> cargar colegios de su municipio y requerir colegioId
+    if (this.currentUser?.role === 'municipal' && value === 'colegio') {
+      this.userForm.get('colegioId')?.setValidators([Validators.required])
+      if (this.currentUser.municipioId) {
+        console.log('Cargando colegios para municipioId =', this.currentUser.municipioId)
+        this.colegioService
+          .getColegiosByMunicipio(this.currentUser.municipioId)
+          .subscribe({
+            next: (data: Colegio[]) => {
+              this.colegios = [...data]
+              console.log('Colegios cargados:', data)
+              this.cdr.detectChanges()
+            },
+            error: (err: any) => {
+              console.error('Error al cargar colegios:', err)
+              this.colegios = []
             },
           })
-      } else {
-        this.municipios = []
-        console.log('No hay provinciaId en el usuario actual')
       }
-    } else {
-      this.userForm.patchValue({ role: this.availableRoles[0]?.value })
       this.municipios = []
     }
-    this.showDialog = true
-    this.userForm.get('password')?.updateValueAndValidity()
-    this.showDialog = true
+
+    // Actualizar estado de validaciones
+    this.userForm.get('municipioId')?.updateValueAndValidity()
+    this.userForm.get('colegioId')?.updateValueAndValidity()
   }
 
   closeDialog() {

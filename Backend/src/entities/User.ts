@@ -89,6 +89,10 @@ export class User {
   @JoinColumn({ name: 'recintoId' })
   recinto: Recinto;
 
+  // Usuario que creó este registro
+  @Column({ type: 'int', nullable: true })
+  createdByUserId: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

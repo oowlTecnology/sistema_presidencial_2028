@@ -11,8 +11,10 @@ router.use('/users', userRoutes)
 router.use('/personas', personaRoutes)
 import provinciasRoutes from './provincias'
 import municipiosRoutes from './municipios'
+import colegiosRoutes from './colegios'
 router.use('/provincias', provinciasRoutes)
 router.use('/municipios', municipiosRoutes)
+router.use('/colegios', colegiosRoutes)
 
 // Ruta de salud del servidor
 router.get('/health', (req, res) => {

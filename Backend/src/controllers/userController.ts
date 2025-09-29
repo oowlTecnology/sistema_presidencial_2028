@@ -45,11 +45,32 @@ export class UserController {
           'isActive',
           'phoneNumber',
           'address',
+          'createdByUserId',
           'createdAt',
         ],
       })
 
-      res.json(users)
+      // Enriquecer con datos del creador
+      const creatorIds = Array.from(
+        new Set(users.map((u) => u.createdByUserId).filter((id): id is number => !!id))
+      )
+      let creatorsMap: Record<number, { id: number; firstName: string; lastName: string; email: string }> = {}
+      if (creatorIds.length > 0) {
+        const creators = await userRepository.find({
+          where: creatorIds.map((id) => ({ id })),
+          select: ['id', 'firstName', 'lastName', 'email'],
+        })
+        creatorsMap = Object.fromEntries(
+          creators.map((c) => [c.id, { id: c.id, firstName: c.firstName, lastName: c.lastName, email: c.email }])
+        )
+      }
+
+      const result = users.map((u) => ({
+        ...u,
+        creator: u.createdByUserId ? creatorsMap[u.createdByUserId] : null,
+      }))
+
+      res.json(result)
     } catch (error) {
       console.error('Error al obtener usuarios:', error)
       res.status(500).json({ message: 'Error interno del servidor' })
@@ -87,9 +108,13 @@ export class UserController {
 
       switch (currentUser.role) {
         case 'provincial':
-          // El provincial puede crear usuarios de cualquier nivel
+          // El provincial puede crear usuarios de cualquier nivel.
+          // Si crea un usuario municipal, forzamos provinciaId = provincia del usuario actual
           validatedIds = {
-            provinciaId,
+            provinciaId:
+              newUserRole === UserRole.MUNICIPAL
+                ? currentUser.provinciaId
+                : provinciaId,
             municipioId,
             circunscripcionId,
             colegioId,
@@ -143,6 +168,21 @@ export class UserController {
       // Hash de la contraseña
       const hashedPassword = await bcrypt.hash(password, 12)
 
+      // Normalizar IDs a número y validar requisitos por rol
+      const norm = (v: any) => (v !== undefined && v !== null ? Number(v) : undefined)
+
+      if (newUserRole === UserRole.MUNICIPAL) {
+        // municipioId es obligatorio para usuarios municipales
+        const muni = validatedIds.municipioId ?? municipioId
+        if (muni === undefined || muni === null) {
+          return res.status(400).json({
+            message: 'municipioId es requerido para usuarios municipales',
+          })
+        }
+        // provinciaId: usar la del creador si es provincial o la que venga en el body
+        validatedIds.provinciaId = validatedIds.provinciaId ?? provinciaId ?? currentUser.provinciaId
+      }
+
       const user = userRepository.create({
         email,
         password: hashedPassword,
@@ -152,14 +192,12 @@ export class UserController {
         phoneNumber,
         address,
         isActive: true,
-        provinciaId:
-          validatedIds.provinciaId || provinciaId
-            ? Number(validatedIds.provinciaId || provinciaId)
-            : undefined,
-        municipioId: validatedIds.municipioId || municipioId,
-        circunscripcionId: validatedIds.circunscripcionId || circunscripcionId,
-        colegioId: validatedIds.colegioId || colegioId,
-        recintoId: validatedIds.recintoId || recintoId,
+        createdByUserId: currentUser.id,
+        provinciaId: norm(validatedIds.provinciaId ?? provinciaId),
+        municipioId: norm(validatedIds.municipioId ?? municipioId),
+        circunscripcionId: norm(validatedIds.circunscripcionId ?? circunscripcionId),
+        colegioId: norm(validatedIds.colegioId ?? colegioId),
+        recintoId: norm(validatedIds.recintoId ?? recintoId),
       })
 
       const errors = await validate(user)
@@ -183,12 +221,19 @@ export class UserController {
         phoneNumber: userObj.phoneNumber,
         address: userObj.address,
         isActive: userObj.isActive,
+        createdByUserId: userObj.createdByUserId,
         provinciaId: userObj.provinciaId,
         municipioId: userObj.municipioId,
         colegioId: userObj.colegioId,
         recintoId: userObj.recintoId,
         createdAt: userObj.createdAt,
         updatedAt: userObj.updatedAt,
+        creator: {
+          id: currentUser.id,
+          firstName: currentUser.firstName,
+          lastName: currentUser.lastName,
+          email: currentUser.email,
+        },
       }
 
       res.status(201).json({
