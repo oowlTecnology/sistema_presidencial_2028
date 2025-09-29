@@ -23,6 +23,7 @@ import { UserService } from '../../services/user.service'
 import { User, UserRole, RegisterRequest } from '../../models/user.model'
 import { MunicipioService, Municipio } from '../../services/municipio.service'
 import { ColegioService, Colegio } from '../../services/colegio.service'
+import { RecintoService, Recinto } from '../../services/recinto.service'
 
 @Component({
   selector: 'app-users',
@@ -233,6 +234,21 @@ import { ColegioService, Colegio } from '../../services/colegio.service'
             </mat-select>
           </mat-form-field>
 
+          <!-- Debajo de Rol: Recinto (si colegio crea recinto) -->
+          <mat-form-field
+            appearance="outline"
+            class="full-width"
+            *ngIf="currentUser?.role === 'colegio' && userForm.get('role')?.value === 'recinto'"
+          >
+            <mat-label>Recinto</mat-label>
+            <mat-select formControlName="recintoId">
+              <mat-option *ngIf="recintos.length === 0" disabled>No hay recintos disponibles</mat-option>
+              <mat-option *ngFor="let recinto of recintos" [value]="recinto.ID">
+                {{ recinto.Descripcion }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
           <!-- Email -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Email</mat-label>
@@ -281,8 +297,8 @@ import { ColegioService, Colegio } from '../../services/colegio.service'
           </div>
         </form>
       </div>
-    </div>
-  `,
+  </div>
+`,
   styles: [
     `
       .users-container {
@@ -442,6 +458,7 @@ export class UsersComponent implements OnInit {
   // Estado y datos
   municipios: Municipio[] = []
   colegios: Colegio[] = []
+  recintos: Recinto[] = []
   users: User[] = []
   displayedColumns: string[] = ['name', 'email', 'role', 'status', 'createdAt', 'actions']
   currentUser: User | null = null
@@ -462,6 +479,7 @@ export class UsersComponent implements OnInit {
     private userService: UserService,
     private municipioService: MunicipioService,
     private colegioService: ColegioService,
+    private recintoService: RecintoService,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef
   ) {
@@ -473,6 +491,7 @@ export class UsersComponent implements OnInit {
       role: ['', [Validators.required]],
       municipioId: [''],
       colegioId: [''],
+      recintoId: [''],
       phoneNumber: [''],
       address: [''],
     })
@@ -536,6 +555,10 @@ export class UsersComponent implements OnInit {
       this.userForm.patchValue({ role: 'colegio' })
       console.log('Usuario municipal con municipioId =', this.currentUser.municipioId)
       this.onRoleChange('colegio')
+    } else if (this.currentUser?.role === 'colegio') {
+      this.userForm.patchValue({ role: 'recinto' })
+      console.log('Usuario de colegio con colegioId =', this.currentUser.colegioId)
+      this.onRoleChange('recinto')
     } else {
       this.userForm.patchValue({ role: this.availableRoles[0]?.value })
       this.municipios = []
@@ -562,21 +585,22 @@ export class UsersComponent implements OnInit {
   }
   onRoleChange(event: any) {
     console.log('onRoleChange valor recibido:', event)
-    let value: string
+    let value: string;
     if (event && typeof event === 'object') {
       if ('value' in event) {
-        value = event.value
+        value = event.value;
       } else if (event.target && event.target.value) {
-        value = event.target.value
+        value = event.target.value;
       } else {
-        value = this.userForm.get('role')?.value
+        value = this.userForm.get('role')?.value;
       }
     } else {
-      value = event
+      value = event;
     }
     // Limpiar validaciones dinámicas
     this.userForm.get('municipioId')?.clearValidators()
     this.userForm.get('colegioId')?.clearValidators()
+    this.userForm.get('recintoId')?.clearValidators()
 
     // Caso 1: Provincial creando Municipal -> cargar municipios y requerir municipioId
     if (this.currentUser?.role === 'provincial' && value === 'municipal') {
@@ -617,9 +641,33 @@ export class UsersComponent implements OnInit {
       this.municipios = []
     }
 
+    // Caso 3: Colegio creando Recinto -> cargar recintos de su colegio y requerir recintoId
+    if (this.currentUser?.role === 'colegio' && value === 'recinto') {
+      this.userForm.get('recintoId')?.setValidators([Validators.required])
+      if (this.currentUser.colegioId) {
+        console.log('Cargando recintos para colegioId =', this.currentUser.colegioId)
+        this.recintoService
+          .getRecintosByColegio(this.currentUser.colegioId)
+          .subscribe({
+            next: (data: Recinto[]) => {
+              this.recintos = [...data]
+              console.log('Recintos cargados:', data)
+              this.cdr.detectChanges()
+            },
+            error: (err: any) => {
+              console.error('Error al cargar recintos:', err)
+              this.recintos = []
+            },
+          })
+      }
+      this.municipios = []
+      this.colegios = []
+    }
+
     // Actualizar estado de validaciones
     this.userForm.get('municipioId')?.updateValueAndValidity()
     this.userForm.get('colegioId')?.updateValueAndValidity()
+    this.userForm.get('recintoId')?.updateValueAndValidity()
   }
 
   closeDialog() {
