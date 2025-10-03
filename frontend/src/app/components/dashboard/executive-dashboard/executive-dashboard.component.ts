@@ -71,7 +71,7 @@ export class ExecutiveDashboardComponent implements OnInit, AfterViewInit {
     maintainAspectRatio: true,
     plugins: {
       legend: { position: 'right' },
-      title: { display: true, text: 'Distribución de Coordinadores' }
+      title: { display: false }
     }
   }
 
@@ -80,7 +80,7 @@ export class ExecutiveDashboardComponent implements OnInit, AfterViewInit {
     maintainAspectRatio: true,
     plugins: {
       legend: { position: 'bottom' },
-      title: { display: true, text: 'Estado de Fidelización' }
+      title: { display: false }
     }
   }
 
@@ -90,7 +90,7 @@ export class ExecutiveDashboardComponent implements OnInit, AfterViewInit {
     indexAxis: 'y',
     plugins: {
       legend: { display: false },
-      title: { display: true, text: 'Top 10 Coordinadores' }
+      title: { display: false }
     },
     scales: {
       x: { beginAtZero: true }
@@ -102,7 +102,7 @@ export class ExecutiveDashboardComponent implements OnInit, AfterViewInit {
     maintainAspectRatio: true,
     plugins: {
       legend: { position: 'bottom' },
-      title: { display: true, text: 'Tendencias Últimos 7 Días' }
+      title: { display: false }
     }
   }
 
@@ -111,7 +111,7 @@ export class ExecutiveDashboardComponent implements OnInit, AfterViewInit {
     maintainAspectRatio: true,
     plugins: {
       legend: { position: 'bottom' },
-      title: { display: true, text: 'Cobertura por Provincia' }
+      title: { display: false }
     }
   }
 

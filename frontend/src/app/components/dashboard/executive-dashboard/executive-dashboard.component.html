@@ -136,27 +136,47 @@
       </div>
     </mat-card>
 
-    <!-- Sugerencias IA -->
-    <mat-card class="suggestions-card" *ngIf="estadisticas && estadisticas.sugerencias && estadisticas.sugerencias.length > 0">
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon class="ai-icon">psychology</mat-icon>
-          Sugerencias Inteligentes
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="suggestions-compact">
-          <div *ngFor="let sugerencia of estadisticas?.sugerencias" 
-               class="suggestion-compact" 
-               [ngClass]="getSugerenciaTipo(sugerencia.tipo)">
-            <mat-icon class="suggestion-icon-small">{{ sugerencia.icono }}</mat-icon>
-            <div class="suggestion-text">
-              <strong>{{ sugerencia.titulo }}:</strong> {{ sugerencia.descripcion }}
+    <!-- Grid de Sugerencias y Radar -->
+    <div class="suggestions-radar-grid">
+      <!-- Sugerencias IA -->
+      <mat-card class="suggestions-card" *ngIf="estadisticas && estadisticas.sugerencias && estadisticas.sugerencias.length > 0">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon class="ai-icon">psychology</mat-icon>
+            Sugerencias Inteligentes
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="suggestions-compact">
+            <div *ngFor="let sugerencia of estadisticas?.sugerencias" 
+                 class="suggestion-compact" 
+                 [ngClass]="getSugerenciaTipo(sugerencia.tipo)">
+              <mat-icon class="suggestion-icon-small">{{ sugerencia.icono }}</mat-icon>
+              <div class="suggestion-text">
+                <strong>{{ sugerencia.titulo }}:</strong> {{ sugerencia.descripcion }}
+              </div>
             </div>
           </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Radar de Cobertura por Provincia -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>radar</mat-icon>
+            Cobertura por Provincia
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <canvas baseChart
+            [data]="provinciasCoberturaChartData"
+            [type]="radarChartType"
+            [options]="radarOptions">
+          </canvas>
+        </mat-card-content>
+      </mat-card>
+    </div>
 
     <!-- Mapa de República Dominicana -->
     <mat-card class="map-card">
@@ -192,6 +212,12 @@
     <div class="charts-grid">
       <!-- Distribución de Coordinadores -->
       <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>donut_large</mat-icon>
+            Distribución de Coordinadores
+          </mat-card-title>
+        </mat-card-header>
         <mat-card-content>
           <canvas baseChart
             [data]="coordinadoresChartData"
@@ -203,6 +229,12 @@
 
       <!-- Estado de Fidelización -->
       <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>pie_chart</mat-icon>
+            Estado de Fidelización
+          </mat-card-title>
+        </mat-card-header>
         <mat-card-content>
           <canvas baseChart
             [data]="fidelizacionChartData"
@@ -212,19 +244,14 @@
         </mat-card-content>
       </mat-card>
 
-      <!-- Cobertura por Provincia (Radar) -->
-      <mat-card class="chart-card full-width">
-        <mat-card-content>
-          <canvas baseChart
-            [data]="provinciasCoberturaChartData"
-            [type]="radarChartType"
-            [options]="radarOptions">
-          </canvas>
-        </mat-card-content>
-      </mat-card>
-
       <!-- Top Coordinadores -->
       <mat-card class="chart-card full-width">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>bar_chart</mat-icon>
+            Top 10 Coordinadores
+          </mat-card-title>
+        </mat-card-header>
         <mat-card-content>
           <canvas baseChart
             [data]="topCoordinadoresChartData"
