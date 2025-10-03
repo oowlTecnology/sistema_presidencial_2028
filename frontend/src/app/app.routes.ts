@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -20,6 +21,11 @@ export const routes: Routes = [
     path: 'dashboard',
     canActivate: [authGuard],
     children: [
+      {
+        path: 'ejecutivo',
+        loadComponent: () => import('./components/dashboard/executive-dashboard/executive-dashboard.component').then(m => m.ExecutiveDashboardComponent),
+        canActivate: [roleGuard(['ejecutivo', 'super_admin'])]
+      },
       {
         path: 'provincial',
         loadComponent: () => import('./components/dashboard/provincial-dashboard/provincial-dashboard.component').then(m => m.ProvincialDashboardComponent),
@@ -51,6 +57,11 @@ export const routes: Routes = [
     path: 'users',
     canActivate: [authGuard],
     loadComponent: () => import('./components/users/users.component').then(m => m.UsersComponent)
+  },
+  {
+    path: 'admin',
+    canActivate: [adminGuard],
+    loadComponent: () => import('./components/admin-panel/admin-panel.component').then(m => m.AdminPanelComponent)
   },
   {
     path: '**',

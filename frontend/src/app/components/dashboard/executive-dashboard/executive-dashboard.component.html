@@ -1,0 +1,301 @@
+<div class="executive-dashboard">
+  <mat-toolbar color="primary" class="toolbar-executive">
+    <div class="toolbar-content">
+      <div class="toolbar-left">
+        <mat-icon class="dashboard-icon">dashboard</mat-icon>
+        <span class="title">Dashboard Ejecutivo</span>
+        <span class="subtitle">Gana tu Colegio 2028</span>
+      </div>
+      <div class="toolbar-right">
+        <button mat-raised-button color="accent" routerLink="/admin" *ngIf="currentUser?.role === 'super_admin'">
+          <mat-icon>admin_panel_settings</mat-icon>
+          Panel Admin
+        </button>
+        <button mat-button (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <div class="dashboard-content" *ngIf="!cargando; else loadingTemplate">
+    <!-- Header con bienvenida y resumen -->
+    <div class="welcome-header">
+      <div class="welcome-text">
+        <h1>Bienvenido, {{ currentUser?.firstName }} {{ currentUser?.lastName }}</h1>
+        <p class="role-badge-executive">Vista Ejecutiva</p>
+      </div>
+      <div class="quick-stats">
+        <div class="quick-stat">
+          <mat-icon>people</mat-icon>
+          <div>
+            <div class="stat-number">{{ estadisticas?.resumen?.totalUsuariosActivos || 0 }}</div>
+            <div class="stat-label">Usuarios Activos</div>
+          </div>
+        </div>
+        <div class="quick-stat">
+          <mat-icon>check_circle</mat-icon>
+          <div>
+            <div class="stat-number">{{ estadisticas?.resumen?.totalFidelizaciones || 0 }}</div>
+            <div class="stat-label">Fidelizaciones</div>
+          </div>
+        </div>
+        <div class="quick-stat">
+          <mat-icon>trending_up</mat-icon>
+          <div>
+            <div class="stat-number">{{ estadisticas?.resumen?.porcentajeFidelizacion || 0 }}%</div>
+            <div class="stat-label">Cobertura</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPIs Principales - Solo 5 cards -->
+    <div class="kpi-grid">
+      <mat-card class="kpi-card kpi-provincial">
+        <div class="kpi-icon">
+          <mat-icon>account_balance</mat-icon>
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-number">{{ estadisticas?.resumen?.totalProvinciales || 0 }}</div>
+          <div class="kpi-label">Provinciales</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="kpi-card kpi-municipal">
+        <div class="kpi-icon">
+          <mat-icon>location_city</mat-icon>
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-number">{{ estadisticas?.resumen?.totalMunicipales || 0 }}</div>
+          <div class="kpi-label">Municipales</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="kpi-card kpi-circunscripcion">
+        <div class="kpi-icon">
+          <mat-icon>map</mat-icon>
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-number">{{ estadisticas?.resumen?.totalCircunscripciones || 0 }}</div>
+          <div class="kpi-label">Circunscripción</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="kpi-card kpi-colegio">
+        <div class="kpi-icon">
+          <mat-icon>school</mat-icon>
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-number">{{ estadisticas?.resumen?.totalColegios || 0 }}</div>
+          <div class="kpi-label">Colegios</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="kpi-card kpi-recinto">
+        <div class="kpi-icon">
+          <mat-icon>how_to_vote</mat-icon>
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-number">{{ estadisticas?.resumen?.totalRecintos || 0 }}</div>
+          <div class="kpi-label">Recintos</div>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Fidelizaciones en card separado más compacto -->
+    <mat-card class="fidelizacion-summary">
+      <div class="fidelizacion-content">
+        <div class="fidelizacion-stats">
+          <div class="stat-item">
+            <mat-icon>favorite</mat-icon>
+            <div>
+              <div class="stat-value">{{ estadisticas?.resumen?.totalFidelizaciones || 0 }}</div>
+              <div class="stat-label">Fidelizaciones</div>
+            </div>
+          </div>
+          <div class="stat-item">
+            <mat-icon>people</mat-icon>
+            <div>
+              <div class="stat-value">{{ estadisticas?.resumen?.totalPadron || 0 }}</div>
+              <div class="stat-label">Padrón Total</div>
+            </div>
+          </div>
+          <div class="stat-item">
+            <mat-icon>trending_up</mat-icon>
+            <div>
+              <div class="stat-value">{{ estadisticas?.resumen?.porcentajeFidelizacion || 0 }}%</div>
+              <div class="stat-label">Cobertura</div>
+            </div>
+          </div>
+        </div>
+        <div class="progress-bar-large">
+          <div class="progress-fill" [style.width.%]="estadisticas?.resumen?.porcentajeFidelizacion || 0"></div>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Sugerencias IA -->
+    <mat-card class="suggestions-card" *ngIf="estadisticas && estadisticas.sugerencias && estadisticas.sugerencias.length > 0">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="ai-icon">psychology</mat-icon>
+          Sugerencias Inteligentes
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="suggestions-compact">
+          <div *ngFor="let sugerencia of estadisticas?.sugerencias" 
+               class="suggestion-compact" 
+               [ngClass]="getSugerenciaTipo(sugerencia.tipo)">
+            <mat-icon class="suggestion-icon-small">{{ sugerencia.icono }}</mat-icon>
+            <div class="suggestion-text">
+              <strong>{{ sugerencia.titulo }}:</strong> {{ sugerencia.descripcion }}
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Mapa de República Dominicana -->
+    <mat-card class="map-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>map</mat-icon>
+          Mapa de Cobertura - República Dominicana
+        </mat-card-title>
+        <mat-card-subtitle>Provincias por nivel de cobertura</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="map-legend">
+          <div class="legend-item">
+            <span class="legend-color alta"></span>
+            <span>Alta (3+ coordinadores)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color media"></span>
+            <span>Media (1-2 coordinadores)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color baja"></span>
+            <span>Baja (0 coordinadores)</span>
+          </div>
+        </div>
+        
+        <!-- Mapa Leaflet de República Dominicana -->
+        <div id="leaflet-map" class="leaflet-container"></div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Gráficos Avanzados -->
+    <div class="charts-grid">
+      <!-- Distribución de Coordinadores -->
+      <mat-card class="chart-card">
+        <mat-card-content>
+          <canvas baseChart
+            [data]="coordinadoresChartData"
+            [type]="doughnutChartType"
+            [options]="doughnutOptions">
+          </canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Estado de Fidelización -->
+      <mat-card class="chart-card">
+        <mat-card-content>
+          <canvas baseChart
+            [data]="fidelizacionChartData"
+            [type]="pieChartType"
+            [options]="pieOptions">
+          </canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Cobertura por Provincia (Radar) -->
+      <mat-card class="chart-card full-width">
+        <mat-card-content>
+          <canvas baseChart
+            [data]="provinciasCoberturaChartData"
+            [type]="radarChartType"
+            [options]="radarOptions">
+          </canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Top Coordinadores -->
+      <mat-card class="chart-card full-width">
+        <mat-card-content>
+          <canvas baseChart
+            [data]="topCoordinadoresChartData"
+            [type]="barChartType"
+            [options]="barOptions">
+          </canvas>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Tabla de Provincias Detallada -->
+    <mat-card class="table-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>table_chart</mat-icon>
+          Detalle por Provincia
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="table-container">
+          <table class="provincia-table">
+            <thead>
+              <tr>
+                <th>Provincia</th>
+                <th>Provinciales</th>
+                <th>Municipales</th>
+                <th>Circunscripción</th>
+                <th>Total Coord.</th>
+                <th>Fidelizaciones</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let prov of paginatedProvincias" 
+                  [ngClass]="'row-' + prov.cobertura">
+                <td class="provincia-name-cell">
+                  <strong>{{ prov.provincia }}</strong>
+                </td>
+                <td>{{ prov.coordinadoresProvinciales }}</td>
+                <td>{{ prov.coordinadoresMunicipales }}</td>
+                <td>{{ prov.coordinadoresCircunscripcion }}</td>
+                <td><strong>{{ prov.totalCoordinadores }}</strong></td>
+                <td>
+                  <span class="fidelizacion-badge">{{ prov.fidelizaciones }}</span>
+                </td>
+                <td>
+                  <mat-chip [ngClass]="'chip-' + prov.cobertura">
+                    {{ prov.cobertura === 'alta' ? 'Alta' : prov.cobertura === 'media' ? 'Media' : 'Baja' }}
+                  </mat-chip>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <mat-paginator 
+          [length]="estadisticas?.estadisticasPorProvincia?.length || 0"
+          [pageSize]="pageSize"
+          [pageIndex]="pageIndex"
+          [pageSizeOptions]="[5, 10, 25]"
+          (page)="onPageChange($event)"
+          showFirstLastButtons>
+        </mat-paginator>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-container">
+      <mat-spinner diameter="60"></mat-spinner>
+      <h2>Cargando Dashboard Ejecutivo...</h2>
+      <p>Analizando datos del sistema</p>
+    </div>
+  </ng-template>
+</div>

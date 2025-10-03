@@ -8,6 +8,8 @@ import { Colegio } from './Colegio';
 import { Recinto } from './Recinto';
 
 export enum UserRole {
+  SUPER_ADMIN = 'super_admin',
+  EJECUTIVO = 'ejecutivo',
   PROVINCIAL = 'provincial',
   MUNICIPAL = 'municipal',
   CIRCUNSCRIPCION = 'circunscripcion',

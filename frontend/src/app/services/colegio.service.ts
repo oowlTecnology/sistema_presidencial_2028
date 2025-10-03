@@ -19,4 +19,8 @@ export class ColegioService {
   getColegiosByMunicipio(municipioId: number): Observable<Colegio[]> {
     return this.http.get<Colegio[]>(`${this.apiUrl}?municipioId=${municipioId}`)
   }
+
+  getColegiosByCircunscripcion(circunscripcionId: number): Observable<Colegio[]> {
+    return this.http.get<Colegio[]>(`${this.apiUrl}?circunscripcionId=${circunscripcionId}`)
+  }
 }

@@ -4,6 +4,24 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User, RegisterRequest } from '../models/user.model';
 
+export interface MetaCoordinador {
+  coordinador: string
+  municipio?: string
+  totalPersonasMunicipio?: number
+  fidelizados: number
+  meta: number
+  porcentaje: number
+}
+
+export interface EstadisticasProvincial {
+  totalMunicipales: number
+  totalColegios: number
+  totalRecintos: number
+  metasMunicipales: MetaCoordinador[]
+  metasColegios: MetaCoordinador[]
+  metasRecintos: MetaCoordinador[]
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,6 +32,10 @@ export class UserService {
 
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiUrl}/users`);
+  }
+
+  getEstadisticasProvincial(): Observable<EstadisticasProvincial> {
+    return this.http.get<EstadisticasProvincial>(`${this.apiUrl}/users/estadisticas-provincial`);
   }
 
   createUser(userData: RegisterRequest): Observable<{ message: string; user: User }> {

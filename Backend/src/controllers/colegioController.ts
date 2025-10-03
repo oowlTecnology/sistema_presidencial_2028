@@ -7,9 +7,18 @@ export class ColegioController {
   async getColegiosByMunicipio(req: Request, res: Response) {
     try {
       const municipioId = parseInt(req.query.municipioId as string)
+      const circunscripcionId = parseInt(req.query.circunscripcionId as string)
+      
       console.log('[ColegioController] municipioId recibido:', req.query.municipioId)
+      console.log('[ColegioController] circunscripcionId recibido:', req.query.circunscripcionId)
+      
+      // Si se solicita por circunscripción
+      if (circunscripcionId) {
+        return this.getColegiosByCircunscripcion(circunscripcionId, res)
+      }
+      
       if (!municipioId) {
-        return res.status(400).json({ message: 'municipioId es requerido' })
+        return res.status(400).json({ message: 'municipioId o circunscripcionId es requerido' })
       }
       const colegioRepo = AppDataSource.getRepository(Colegio)
       let colegios = await colegioRepo.find({ where: { IDMunicipio: municipioId } })
@@ -44,6 +53,27 @@ export class ColegioController {
     } catch (error) {
       console.error('[ColegioController] Error:', error)
       res.status(500).json({ message: 'Error al obtener colegios' })
+    }
+  }
+
+  private async getColegiosByCircunscripcion(circunscripcionId: number, res: Response) {
+    try {
+      const colegioRepo = AppDataSource.getRepository(Colegio)
+      // Nota: La tabla Colegio no tiene IDCircunscripcion directamente
+      // Necesitamos buscar a través de la relación con Circunscripcion
+      // Por ahora retornamos array vacío hasta que se defina la relación correcta
+      const colegios = await colegioRepo
+        .createQueryBuilder('colegio')
+        .innerJoin('colegio.circunscripcion', 'circunscripcion')
+        .where('circunscripcion.ID = :circunscripcionId', { circunscripcionId })
+        .getMany()
+      
+      console.log('[ColegioController] colegios por circunscripción encontrados:', colegios.length)
+      res.json(colegios)
+    } catch (error) {
+      console.error('[ColegioController] Error al obtener colegios por circunscripción:', error)
+      // Si falla, retornar array vacío por ahora
+      res.json([])
     }
   }
 }

@@ -7,6 +7,9 @@ import { Colegio } from '../entities/Colegio';
 import { Recinto } from '../entities/Recinto';
 import { Circunscripcion } from '../entities/Circunscripcion';
 import { Elector } from '../entities/Elector';
+import { Padron } from '../entities/Padron';
+import { Foto } from '../entities/Foto';
+import { Fidelizacion } from '../entities/Fidelizacion';
 
 config();
 
@@ -17,14 +20,16 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USERNAME || 'sa',
   password: process.env.DB_PASSWORD || '!@Qwerty*',
   database: process.env.DB_DATABASE || 'gana_tu_colegio',
-  synchronize: process.env.NODE_ENV === 'development',
+  synchronize: false, // Deshabilitado para evitar modificar tablas existentes
   logging: process.env.NODE_ENV === 'development',
-  entities: [User, Provincia, Municipio, Circunscripcion, Colegio, Recinto, Elector],
+  entities: [User, Provincia, Municipio, Circunscripcion, Colegio, Recinto, Elector, Padron, Foto, Fidelizacion],
   migrations: ['src/migrations/*.ts'],
   subscribers: ['src/subscriber/*.ts'],
+  requestTimeout: 30000, // 30 segundos para queries
   options: {
     encrypt: false, // Para desarrollo local
-    trustServerCertificate: true // Para desarrollo local
+    trustServerCertificate: true, // Para desarrollo local
+    connectTimeout: 30000 // 30 segundos para conexión
   }
 });
 

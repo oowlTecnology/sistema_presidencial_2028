@@ -7,8 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { NgChartsModule } from 'ng2-charts';
-import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { AuthService } from '../../../services/auth.service';
 import { UserService, EstadisticasProvincial } from '../../../services/user.service';
 import { User } from '../../../models/user.model';
@@ -24,22 +22,13 @@ import { User } from '../../../models/user.model';
     MatIconModule,
     MatToolbarModule,
     MatExpansionModule,
-    MatProgressSpinnerModule,
-    NgChartsModule
+    MatProgressSpinnerModule
   ],
   template: `
     <div class="dashboard-container">
       <mat-toolbar color="primary" class="toolbar">
         <span>Dashboard Provincial - Gana tu Colegio 2028</span>
         <span class="spacer"></span>
-        <button mat-raised-button color="warn" routerLink="/admin" class="admin-button" *ngIf="currentUser?.role === 'super_admin'">
-          <mat-icon>admin_panel_settings</mat-icon>
-          Panel Admin
-        </button>
-        <button mat-raised-button color="accent" routerLink="/users" class="users-button">
-          <mat-icon>people</mat-icon>
-          Gestión de Usuarios
-        </button>
         <button mat-button (click)="logout()">
           <mat-icon>logout</mat-icon>
           Cerrar Sesión
@@ -91,60 +80,6 @@ import { User } from '../../../models/user.model';
           </mat-card>
         </div>
 
-        <!-- Gráficos -->
-        <div class="charts-grid" *ngIf="!cargando">
-          <!-- Gráfico de Pie: Distribución de Coordinadores -->
-          <mat-card class="chart-card">
-            <mat-card-header>
-              <mat-card-title>
-                <mat-icon>pie_chart</mat-icon>
-                Distribución de Coordinadores
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <canvas baseChart
-                [data]="pieChartData"
-                [type]="pieChartType"
-                [options]="pieChartOptions">
-              </canvas>
-            </mat-card-content>
-          </mat-card>
-
-          <!-- Gráfico de Línea: Progreso de Fidelización -->
-          <mat-card class="chart-card">
-            <mat-card-header>
-              <mat-card-title>
-                <mat-icon>show_chart</mat-icon>
-                Progreso de Fidelización por Coordinador
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <canvas baseChart
-                [data]="lineChartData"
-                [type]="lineChartType"
-                [options]="lineChartOptions">
-              </canvas>
-            </mat-card-content>
-          </mat-card>
-
-          <!-- Gráfico de Barras: Top 10 Coordinadores -->
-          <mat-card class="chart-card full-width">
-            <mat-card-header>
-              <mat-card-title>
-                <mat-icon>bar_chart</mat-icon>
-                Top 10 Coordinadores por Fidelización
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <canvas baseChart
-                [data]="barChartData"
-                [type]="barChartType"
-                [options]="barChartOptions">
-              </canvas>
-            </mat-card-content>
-          </mat-card>
-        </div>
-
         <!-- Metas de Coordinadores Municipales -->
         <mat-card class="metas-card" *ngIf="!cargando">
           <mat-card-header>
@@ -158,10 +93,7 @@ import { User } from '../../../models/user.model';
               <mat-expansion-panel *ngFor="let meta of estadisticas?.metasMunicipales">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                    <div class="coordinator-info">
-                      <strong>{{ meta.coordinador }}</strong>
-                      <span class="municipio-label">{{ meta.municipio }}</span>
-                    </div>
+                    <strong>{{ meta.coordinador }}</strong>
                   </mat-panel-title>
                   <mat-panel-description>
                     <span class="meta-badge" [ngClass]="getMetaClassColor(meta.porcentaje)">
@@ -170,14 +102,6 @@ import { User } from '../../../models/user.model';
                   </mat-panel-description>
                 </mat-expansion-panel-header>
                 <div class="meta-details">
-                  <div class="municipio-stats">
-                    <mat-icon>location_on</mat-icon>
-                    <span><strong>Municipio:</strong> {{ meta.municipio }}</span>
-                  </div>
-                  <div class="municipio-stats">
-                    <mat-icon>people</mat-icon>
-                    <span><strong>Total personas en el municipio:</strong> {{ meta.totalPersonasMunicipio | number }}</span>
-                  </div>
                   <div class="progress-bar-container">
                     <div class="progress-bar-fill" [style.width.%]="meta.porcentaje"></div>
                   </div>
@@ -286,22 +210,6 @@ import { User } from '../../../models/user.model';
       flex: 1 1 auto;
     }
 
-    .admin-button {
-      margin-right: 16px;
-    }
-
-    .admin-button mat-icon {
-      margin-right: 8px;
-    }
-
-    .users-button {
-      margin-right: 16px;
-    }
-
-    .users-button mat-icon {
-      margin-right: 8px;
-    }
-
     .dashboard-content {
       padding: 20px;
       max-width: 1400px;
@@ -408,11 +316,11 @@ import { User } from '../../../models/user.model';
     }
 
     .recinto-card .stat-icon {
-      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
     }
 
     .recinto-card .stat-number {
-      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -457,39 +365,8 @@ import { User } from '../../../models/user.model';
       color: #2e7d32;
     }
 
-    .coordinator-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .municipio-label {
-      font-size: 0.85rem;
-      color: #666;
-      font-weight: 400;
-    }
-
     .meta-details {
       padding: 16px 0;
-    }
-
-    .municipio-stats {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-      color: #555;
-    }
-
-    .municipio-stats mat-icon {
-      color: #2196F3;
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-    }
-
-    .municipio-stats span {
-      font-size: 0.95rem;
     }
 
     .progress-bar-container {
@@ -517,42 +394,10 @@ import { User } from '../../../models/user.model';
     }
 
     .meta-text mat-icon {
-      color: #FFD700;
+      color: #4CAF50;
       font-size: 20px;
       width: 20px;
       height: 20px;
-    }
-
-    .charts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-      gap: 24px;
-      margin-bottom: 30px;
-    }
-
-    .chart-card {
-      border-radius: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-    .chart-card.full-width {
-      grid-column: 1 / -1;
-    }
-
-    .chart-card mat-card-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      color: #333;
-    }
-
-    .chart-card mat-card-title mat-icon {
-      color: #667eea;
-    }
-
-    .chart-card canvas {
-      max-height: 300px;
     }
 
     .loading-container {
@@ -570,14 +415,6 @@ import { User } from '../../../models/user.model';
       .stats-grid {
         grid-template-columns: 1fr;
       }
-
-      .charts-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .chart-card.full-width {
-        grid-column: 1;
-      }
     }
   `]
 })
@@ -585,71 +422,6 @@ export class ProvincialDashboardComponent implements OnInit {
   currentUser: User | null = null
   estadisticas: EstadisticasProvincial | null = null
   cargando: boolean = false
-
-  // Gráfico de Pie
-  pieChartType: ChartType = 'pie'
-  pieChartData: ChartData<'pie'> = {
-    labels: [],
-    datasets: [{
-      data: [],
-      backgroundColor: ['#667eea', '#2196F3', '#FFD700']
-    }]
-  }
-  pieChartOptions: ChartConfiguration['options'] = {
-    responsive: true,
-    maintainAspectRatio: true,
-    plugins: {
-      legend: { position: 'bottom' }
-    }
-  }
-
-  // Gráfico de Línea
-  lineChartType: ChartType = 'line'
-  lineChartData: ChartData<'line'> = {
-    labels: [],
-    datasets: [{
-      label: 'Fidelizados',
-      data: [],
-      borderColor: '#FFD700',
-      backgroundColor: 'rgba(255, 215, 0, 0.1)',
-      tension: 0.4,
-      fill: true
-    }, {
-      label: 'Meta',
-      data: [],
-      borderColor: '#f44336',
-      borderDash: [5, 5],
-      tension: 0
-    }]
-  }
-  lineChartOptions: ChartConfiguration['options'] = {
-    responsive: true,
-    maintainAspectRatio: true,
-    plugins: {
-      legend: { position: 'bottom' }
-    }
-  }
-
-  // Gráfico de Barras
-  barChartType: ChartType = 'bar'
-  barChartData: ChartData<'bar'> = {
-    labels: [],
-    datasets: [{
-      label: 'Personas Fidelizadas',
-      data: [],
-      backgroundColor: '#667eea'
-    }]
-  }
-  barChartOptions: ChartConfiguration['options'] = {
-    responsive: true,
-    maintainAspectRatio: true,
-    plugins: {
-      legend: { display: false }
-    },
-    scales: {
-      y: { beginAtZero: true }
-    }
-  }
 
   constructor(
     private authService: AuthService,
@@ -666,7 +438,6 @@ export class ProvincialDashboardComponent implements OnInit {
     this.userService.getEstadisticasProvincial().subscribe({
       next: (stats) => {
         this.estadisticas = stats
-        this.generarGraficos(stats)
         this.cargando = false
       },
       error: (error) => {
@@ -674,61 +445,6 @@ export class ProvincialDashboardComponent implements OnInit {
         this.cargando = false
       }
     })
-  }
-
-  generarGraficos(stats: EstadisticasProvincial) {
-    // Gráfico de Pie: Distribución de Coordinadores
-    this.pieChartData = {
-      labels: ['Municipales', 'Colegios', 'Recintos'],
-      datasets: [{
-        data: [stats.totalMunicipales, stats.totalColegios, stats.totalRecintos],
-        backgroundColor: ['#667eea', '#2196F3', '#FFD700']
-      }]
-    }
-
-    // Combinar todos los coordinadores para los gráficos
-    const todosCoordinadores = [
-      ...stats.metasMunicipales,
-      ...stats.metasColegios,
-      ...stats.metasRecintos
-    ]
-
-    // Ordenar por fidelizados y tomar top 10
-    const top10 = todosCoordinadores
-      .sort((a, b) => b.fidelizados - a.fidelizados)
-      .slice(0, 10)
-
-    // Gráfico de Línea: Progreso vs Meta (top 10)
-    this.lineChartData = {
-      labels: top10.map(c => c.coordinador.split(' ')[0]), // Solo primer nombre
-      datasets: [{
-        label: 'Fidelizados',
-        data: top10.map(c => c.fidelizados),
-        borderColor: '#FFD700',
-        backgroundColor: 'rgba(255, 215, 0, 0.1)',
-        tension: 0.4,
-        fill: true
-      }, {
-        label: 'Meta (15)',
-        data: top10.map(c => c.meta),
-        borderColor: '#f44336',
-        borderDash: [5, 5],
-        tension: 0
-      }]
-    }
-
-    // Gráfico de Barras: Top 10 Coordinadores
-    this.barChartData = {
-      labels: top10.map(c => c.coordinador),
-      datasets: [{
-        label: 'Personas Fidelizadas',
-        data: top10.map(c => c.fidelizados),
-        backgroundColor: top10.map(c => 
-          c.porcentaje >= 80 ? '#FFD700' : 
-          c.porcentaje >= 50 ? '#FFA500' : '#f44336'
-        )
-      }]
-    }
   }
 
   getMetaClassColor(porcentaje: number): string {

@@ -22,6 +22,7 @@ import { AuthService } from '../../services/auth.service'
 import { UserService } from '../../services/user.service'
 import { User, UserRole, RegisterRequest } from '../../models/user.model'
 import { MunicipioService, Municipio } from '../../services/municipio.service'
+import { CircunscripcionService, Circunscripcion } from '../../services/circunscripcion.service'
 import { ColegioService, Colegio } from '../../services/colegio.service'
 import { RecintoService, Recinto } from '../../services/recinto.service'
 
@@ -177,7 +178,9 @@ import { RecintoService, Recinto } from '../../services/recinto.service'
             <mat-form-field appearance="outline" class="half-width">
               <mat-label>Nombre</mat-label>
               <input matInput formControlName="firstName" required />
-              <mat-error *ngIf="userForm.get('firstName')?.hasError('required')">
+              <mat-error
+                *ngIf="userForm.get('firstName')?.hasError('required')"
+              >
                 El nombre es requerido
               </mat-error>
             </mat-form-field>
@@ -194,8 +197,15 @@ import { RecintoService, Recinto } from '../../services/recinto.service'
           <!-- Rol -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Rol</mat-label>
-            <mat-select formControlName="role" required (selectionChange)="onRoleChange($event.value)">
-              <mat-option *ngFor="let role of availableRoles" [value]="role.value">
+            <mat-select
+              formControlName="role"
+              required
+              (selectionChange)="onRoleChange($event.value)"
+            >
+              <mat-option
+                *ngFor="let role of availableRoles"
+                [value]="role.value"
+              >
                 {{ role.label }}
               </mat-option>
             </mat-select>
@@ -208,13 +218,44 @@ import { RecintoService, Recinto } from '../../services/recinto.service'
           <mat-form-field
             appearance="outline"
             class="full-width"
-            *ngIf="currentUser?.role === 'provincial' && userForm.get('role')?.value === 'municipal'"
+            *ngIf="
+              currentUser?.role === 'provincial' &&
+              userForm.get('role')?.value === 'municipal'
+            "
           >
             <mat-label>Municipio</mat-label>
             <mat-select formControlName="municipioId">
-              <mat-option *ngIf="municipios.length === 0" disabled>No hay municipios disponibles</mat-option>
-              <mat-option *ngFor="let municipio of municipios" [value]="municipio.ID">
+              <mat-option *ngIf="municipios.length === 0" disabled
+                >No hay municipios disponibles</mat-option
+              >
+              <mat-option
+                *ngFor="let municipio of municipios"
+                [value]="municipio.ID"
+              >
                 {{ municipio.Descripcion }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Debajo de Rol: Circunscripción (si provincial crea circunscripción) -->
+          <mat-form-field
+            appearance="outline"
+            class="full-width"
+            *ngIf="
+              currentUser?.role === 'provincial' &&
+              userForm.get('role')?.value === 'circunscripcion'
+            "
+          >
+            <mat-label>Circunscripción</mat-label>
+            <mat-select formControlName="circunscripcionId">
+              <mat-option *ngIf="circunscripciones.length === 0" disabled
+                >No hay circunscripciones disponibles</mat-option
+              >
+              <mat-option
+                *ngFor="let circunscripcion of circunscripciones"
+                [value]="circunscripcion.ID"
+              >
+                {{ circunscripcion.Descripcion }}
               </mat-option>
             </mat-select>
           </mat-form-field>
@@ -223,12 +264,20 @@ import { RecintoService, Recinto } from '../../services/recinto.service'
           <mat-form-field
             appearance="outline"
             class="full-width"
-            *ngIf="currentUser?.role === 'municipal' && userForm.get('role')?.value === 'colegio'"
+            *ngIf="
+              currentUser?.role === 'municipal' &&
+              userForm.get('role')?.value === 'colegio'
+            "
           >
             <mat-label>Colegio</mat-label>
             <mat-select formControlName="colegioId">
-              <mat-option *ngIf="colegios.length === 0" disabled>No hay colegios disponibles</mat-option>
-              <mat-option *ngFor="let colegio of colegios" [value]="colegio.IDColegio">
+              <mat-option *ngIf="colegios.length === 0" disabled
+                >No hay colegios disponibles</mat-option
+              >
+              <mat-option
+                *ngFor="let colegio of colegios"
+                [value]="colegio.IDColegio"
+              >
                 {{ colegio.CodigoColegio }}
               </mat-option>
             </mat-select>
@@ -238,11 +287,16 @@ import { RecintoService, Recinto } from '../../services/recinto.service'
           <mat-form-field
             appearance="outline"
             class="full-width"
-            *ngIf="currentUser?.role === 'colegio' && userForm.get('role')?.value === 'recinto'"
+            *ngIf="
+              currentUser?.role === 'colegio' &&
+              userForm.get('role')?.value === 'recinto'
+            "
           >
             <mat-label>Recinto</mat-label>
             <mat-select formControlName="recintoId">
-              <mat-option *ngIf="recintos.length === 0" disabled>No hay recintos disponibles</mat-option>
+              <mat-option *ngIf="recintos.length === 0" disabled
+                >No hay recintos disponibles</mat-option
+              >
               <mat-option *ngFor="let recinto of recintos" [value]="recinto.ID">
                 {{ recinto.Descripcion }}
               </mat-option>
@@ -253,19 +307,43 @@ import { RecintoService, Recinto } from '../../services/recinto.service'
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Email</mat-label>
             <input matInput type="email" formControlName="email" required />
-            <mat-error *ngIf="userForm.get('email')?.hasError('required')">El email es requerido</mat-error>
-            <mat-error *ngIf="userForm.get('email')?.hasError('email')">Ingresa un email válido</mat-error>
+            <mat-error *ngIf="userForm.get('email')?.hasError('required')"
+              >El email es requerido</mat-error
+            >
+            <mat-error *ngIf="userForm.get('email')?.hasError('email')"
+              >Ingresa un email válido</mat-error
+            >
           </mat-form-field>
 
           <!-- Contraseña (solo crear) -->
-          <mat-form-field appearance="outline" class="full-width" *ngIf="!isEditing">
+          <mat-form-field
+            appearance="outline"
+            class="full-width"
+            *ngIf="!isEditing"
+          >
             <mat-label>Contraseña</mat-label>
-            <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" required />
-            <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
-              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            <input
+              matInput
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              required
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              (click)="hidePassword = !hidePassword"
+              type="button"
+            >
+              <mat-icon>{{
+                hidePassword ? 'visibility_off' : 'visibility'
+              }}</mat-icon>
             </button>
-            <mat-error *ngIf="userForm.get('password')?.hasError('required')">La contraseña es requerida</mat-error>
-            <mat-error *ngIf="userForm.get('password')?.hasError('minlength')">La contraseña debe tener al menos 6 caracteres</mat-error>
+            <mat-error *ngIf="userForm.get('password')?.hasError('required')"
+              >La contraseña es requerida</mat-error
+            >
+            <mat-error *ngIf="userForm.get('password')?.hasError('minlength')"
+              >La contraseña debe tener al menos 6 caracteres</mat-error
+            >
           </mat-form-field>
 
           <!-- Teléfono y Dirección -->
@@ -297,8 +375,8 @@ import { RecintoService, Recinto } from '../../services/recinto.service'
           </div>
         </form>
       </div>
-  </div>
-`,
+    </div>
+  `,
   styles: [
     `
       .users-container {
@@ -344,6 +422,11 @@ import { RecintoService, Recinto } from '../../services/recinto.service'
       .role-municipal {
         background-color: #f3e5f5;
         color: #7b1fa2;
+      }
+
+      .role-circunscripcion {
+        background-color: #e1f5fe;
+        color: #0277bd;
       }
 
       .role-colegio {
@@ -457,10 +540,18 @@ import { RecintoService, Recinto } from '../../services/recinto.service'
 export class UsersComponent implements OnInit {
   // Estado y datos
   municipios: Municipio[] = []
+  circunscripciones: Circunscripcion[] = []
   colegios: Colegio[] = []
   recintos: Recinto[] = []
   users: User[] = []
-  displayedColumns: string[] = ['name', 'email', 'role', 'status', 'createdAt', 'actions']
+  displayedColumns: string[] = [
+    'name',
+    'email',
+    'role',
+    'status',
+    'createdAt',
+    'actions',
+  ]
   currentUser: User | null = null
   isLoading = false
   showDialog = false
@@ -478,6 +569,7 @@ export class UsersComponent implements OnInit {
     private authService: AuthService,
     private userService: UserService,
     private municipioService: MunicipioService,
+    private circunscripcionService: CircunscripcionService,
     private colegioService: ColegioService,
     private recintoService: RecintoService,
     private snackBar: MatSnackBar,
@@ -490,6 +582,7 @@ export class UsersComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       role: ['', [Validators.required]],
       municipioId: [''],
+      circunscripcionId: [''],
       colegioId: [''],
       recintoId: [''],
       phoneNumber: [''],
@@ -508,13 +601,18 @@ export class UsersComponent implements OnInit {
 
     const allRoles = [
       { value: UserRole.MUNICIPAL, label: 'Coordinador Municipal' },
+      { value: UserRole.CIRCUNSCRIPCION, label: 'Coordinador de Circunscripción' },
       { value: UserRole.COLEGIO, label: 'Coordinador de Colegio' },
       { value: UserRole.RECINTO, label: 'Coordinador de Recinto' },
     ]
 
     if (this.currentUser.role === UserRole.PROVINCIAL) {
-      this.availableRoles = allRoles.filter((r) => r.value === UserRole.MUNICIPAL)
+      this.availableRoles = allRoles.filter(
+        (r) => r.value === UserRole.MUNICIPAL || r.value === UserRole.CIRCUNSCRIPCION
+      )
     } else if (this.currentUser.role === UserRole.MUNICIPAL) {
+      this.availableRoles = allRoles.filter((r) => r.value === UserRole.COLEGIO)
+    } else if (this.currentUser.role === UserRole.CIRCUNSCRIPCION) {
       this.availableRoles = allRoles.filter((r) => r.value === UserRole.COLEGIO)
     } else if (this.currentUser.role === UserRole.COLEGIO) {
       this.availableRoles = allRoles.filter((r) => r.value === UserRole.RECINTO)
@@ -537,13 +635,18 @@ export class UsersComponent implements OnInit {
       error: (error: any) => {
         console.error('Error al cargar usuarios:', error)
         this.isLoading = false
-        this.snackBar.open('Error al cargar usuarios', 'Cerrar', { duration: 3000 })
+        this.snackBar.open('Error al cargar usuarios', 'Cerrar', {
+          duration: 3000,
+        })
       },
     })
   }
 
   openAddUserDialog() {
-    console.log('Abriendo modal de usuario. Rol actual:', this.currentUser?.role)
+    console.log(
+      'Abriendo modal de usuario. Rol actual:',
+      this.currentUser?.role
+    )
     this.isEditing = false
     this.selectedUser = null
     this.userForm.reset()
@@ -553,11 +656,17 @@ export class UsersComponent implements OnInit {
       this.onRoleChange('municipal')
     } else if (this.currentUser?.role === 'municipal') {
       this.userForm.patchValue({ role: 'colegio' })
-      console.log('Usuario municipal con municipioId =', this.currentUser.municipioId)
+      console.log(
+        'Usuario municipal con municipioId =',
+        this.currentUser.municipioId
+      )
       this.onRoleChange('colegio')
     } else if (this.currentUser?.role === 'colegio') {
       this.userForm.patchValue({ role: 'recinto' })
-      console.log('Usuario de colegio con colegioId =', this.currentUser.colegioId)
+      console.log(
+        'Usuario de colegio con colegioId =',
+        this.currentUser.colegioId
+      )
       this.onRoleChange('recinto')
     } else {
       this.userForm.patchValue({ role: this.availableRoles[0]?.value })
@@ -585,20 +694,21 @@ export class UsersComponent implements OnInit {
   }
   onRoleChange(event: any) {
     console.log('onRoleChange valor recibido:', event)
-    let value: string;
+    let value: string
     if (event && typeof event === 'object') {
       if ('value' in event) {
-        value = event.value;
+        value = event.value
       } else if (event.target && event.target.value) {
-        value = event.target.value;
+        value = event.target.value
       } else {
-        value = this.userForm.get('role')?.value;
+        value = this.userForm.get('role')?.value
       }
     } else {
-      value = event;
+      value = event
     }
     // Limpiar validaciones dinámicas
     this.userForm.get('municipioId')?.clearValidators()
+    this.userForm.get('circunscripcionId')?.clearValidators()
     this.userForm.get('colegioId')?.clearValidators()
     this.userForm.get('recintoId')?.clearValidators()
 
@@ -616,14 +726,36 @@ export class UsersComponent implements OnInit {
             error: () => (this.municipios = []),
           })
       }
+      this.circunscripciones = []
       this.colegios = []
     }
 
-    // Caso 2: Municipal creando Colegio -> cargar colegios de su municipio y requerir colegioId
+    // Caso 2: Provincial creando Circunscripción -> cargar circunscripciones y requerir circunscripcionId
+    if (this.currentUser?.role === 'provincial' && value === 'circunscripcion') {
+      this.userForm.get('circunscripcionId')?.setValidators([Validators.required])
+      if (this.currentUser.provinciaId) {
+        this.circunscripcionService
+          .getCircunscripcionesByProvincia(this.currentUser.provinciaId)
+          .subscribe({
+            next: (data: Circunscripcion[]) => {
+              this.circunscripciones = [...data]
+              this.cdr.detectChanges()
+            },
+            error: () => (this.circunscripciones = []),
+          })
+      }
+      this.municipios = []
+      this.colegios = []
+    }
+
+    // Caso 3: Municipal creando Colegio -> cargar colegios de su municipio y requerir colegioId
     if (this.currentUser?.role === 'municipal' && value === 'colegio') {
       this.userForm.get('colegioId')?.setValidators([Validators.required])
       if (this.currentUser.municipioId) {
-        console.log('Cargando colegios para municipioId =', this.currentUser.municipioId)
+        console.log(
+          'Cargando colegios para municipioId =',
+          this.currentUser.municipioId
+        )
         this.colegioService
           .getColegiosByMunicipio(this.currentUser.municipioId)
           .subscribe({
@@ -639,13 +771,43 @@ export class UsersComponent implements OnInit {
           })
       }
       this.municipios = []
+      this.circunscripciones = []
     }
 
-    // Caso 3: Colegio creando Recinto -> cargar recintos de su colegio y requerir recintoId
+    // Caso 4: Circunscripción creando Colegio -> cargar colegios de su circunscripción y requerir colegioId
+    if (this.currentUser?.role === 'circunscripcion' && value === 'colegio') {
+      this.userForm.get('colegioId')?.setValidators([Validators.required])
+      if (this.currentUser.circunscripcionId) {
+        console.log(
+          'Cargando colegios para circunscripcionId =',
+          this.currentUser.circunscripcionId
+        )
+        this.colegioService
+          .getColegiosByCircunscripcion(this.currentUser.circunscripcionId)
+          .subscribe({
+            next: (data: Colegio[]) => {
+              this.colegios = [...data]
+              console.log('Colegios cargados:', data)
+              this.cdr.detectChanges()
+            },
+            error: (err: any) => {
+              console.error('Error al cargar colegios:', err)
+              this.colegios = []
+            },
+          })
+      }
+      this.municipios = []
+      this.circunscripciones = []
+    }
+
+    // Caso 5: Colegio creando Recinto -> cargar recintos de su colegio y requerir recintoId
     if (this.currentUser?.role === 'colegio' && value === 'recinto') {
       this.userForm.get('recintoId')?.setValidators([Validators.required])
       if (this.currentUser.colegioId) {
-        console.log('Cargando recintos para colegioId =', this.currentUser.colegioId)
+        console.log(
+          'Cargando recintos para colegioId =',
+          this.currentUser.colegioId
+        )
         this.recintoService
           .getRecintosByColegio(this.currentUser.colegioId)
           .subscribe({
@@ -661,11 +823,13 @@ export class UsersComponent implements OnInit {
           })
       }
       this.municipios = []
+      this.circunscripciones = []
       this.colegios = []
     }
 
     // Actualizar estado de validaciones
     this.userForm.get('municipioId')?.updateValueAndValidity()
+    this.userForm.get('circunscripcionId')?.updateValueAndValidity()
     this.userForm.get('colegioId')?.updateValueAndValidity()
     this.userForm.get('recintoId')?.updateValueAndValidity()
   }
@@ -757,6 +921,7 @@ export class UsersComponent implements OnInit {
     const roleMap: { [key: string]: string } = {
       provincial: 'Provincial',
       municipal: 'Municipal',
+      circunscripcion: 'Circunscripción',
       colegio: 'Colegio',
       recinto: 'Recinto',
     }

@@ -1,4 +1,6 @@
 export enum UserRole {
+  SUPER_ADMIN = 'super_admin',
+  EJECUTIVO = 'ejecutivo',
   PROVINCIAL = 'provincial',
   MUNICIPAL = 'municipal',
   CIRCUNSCRIPCION = 'circunscripcion',
@@ -45,6 +47,7 @@ export interface RegisterRequest {
   address?: string;
   provinciaId?: number;
   municipioId?: number;
+  circunscripcionId?: number;
   colegioId?: number;
   recintoId?: number;
 }

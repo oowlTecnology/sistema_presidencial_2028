@@ -4,6 +4,9 @@ import { User, UserRole } from '../entities/User'
 import { AuthRequest } from '../middleware/auth'
 import { validate } from 'class-validator'
 import bcrypt from 'bcryptjs'
+import { Fidelizacion } from '../entities/Fidelizacion'
+import { Padron } from '../entities/Padron'
+import { Colegio } from '../entities/Colegio'
 
 export class UserController {
   async getUsers(req: AuthRequest, res: Response) {
@@ -108,17 +111,21 @@ export class UserController {
 
       switch (currentUser.role) {
         case 'provincial':
-          // El provincial puede crear usuarios de cualquier nivel.
-          // Si crea un usuario municipal, forzamos provinciaId = provincia del usuario actual
-          validatedIds = {
-            provinciaId:
-              newUserRole === UserRole.MUNICIPAL
-                ? currentUser.provinciaId
-                : provinciaId,
-            municipioId,
-            circunscripcionId,
-            colegioId,
-            recintoId,
+          // El provincial puede crear usuarios municipales y de circunscripción
+          if (newUserRole === UserRole.MUNICIPAL) {
+            validatedIds = {
+              provinciaId: currentUser.provinciaId,
+              municipioId,
+            }
+          } else if (newUserRole === UserRole.CIRCUNSCRIPCION) {
+            validatedIds = {
+              provinciaId: currentUser.provinciaId,
+              circunscripcionId,
+            }
+          } else {
+            return res.status(403).json({
+              message: 'El coordinador provincial solo puede crear coordinadores municipales o de circunscripción',
+            })
           }
           break
         case 'municipal':
@@ -180,6 +187,18 @@ export class UserController {
           })
         }
         // provinciaId: usar la del creador si es provincial o la que venga en el body
+        validatedIds.provinciaId = validatedIds.provinciaId ?? provinciaId ?? currentUser.provinciaId
+      }
+
+      if (newUserRole === UserRole.CIRCUNSCRIPCION) {
+        // circunscripcionId es obligatorio para usuarios de circunscripción
+        const circ = validatedIds.circunscripcionId ?? circunscripcionId
+        if (circ === undefined || circ === null) {
+          return res.status(400).json({
+            message: 'circunscripcionId es requerido para usuarios de circunscripción',
+          })
+        }
+        // provinciaId: usar la del creador si es provincial
         validatedIds.provinciaId = validatedIds.provinciaId ?? provinciaId ?? currentUser.provinciaId
       }
 
@@ -351,6 +370,163 @@ export class UserController {
     } catch (error) {
       console.error('Error al eliminar usuario:', error)
       res.status(500).json({ message: 'Error interno del servidor' })
+    }
+  }
+
+  // Obtener estadísticas para el dashboard provincial
+  async getEstadisticasProvincial(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user?.id
+      const provinciaId = req.user?.provinciaId
+
+      if (!provinciaId) {
+        return res.status(400).json({ message: 'provinciaId es requerido' })
+      }
+
+      const userRepository = AppDataSource.getRepository(User)
+      const fidelizacionRepo = AppDataSource.getRepository(Fidelizacion)
+
+      // Contar coordinadores municipales
+      const totalMunicipales = await userRepository.count({
+        where: { 
+          provinciaId: provinciaId,
+          role: UserRole.MUNICIPAL,
+          isActive: true
+        }
+      })
+
+      // Contar coordinadores de colegio
+      const totalColegios = await userRepository.count({
+        where: { 
+          role: UserRole.COLEGIO,
+          isActive: true
+        }
+      })
+
+      // Contar coordinadores de recinto
+      const totalRecintos = await userRepository.count({
+        where: { 
+          role: UserRole.RECINTO,
+          isActive: true
+        }
+      })
+
+      // Obtener coordinadores municipales con sus metas
+      const coordinadoresMunicipales = await userRepository.find({
+        where: { 
+          provinciaId: provinciaId,
+          role: UserRole.MUNICIPAL,
+          isActive: true
+        },
+        relations: ['municipio'],
+        select: ['id', 'firstName', 'lastName', 'municipioId']
+      })
+
+      const padronRepo = AppDataSource.getRepository(Padron)
+
+      // Calcular fidelizaciones por cada coordinador municipal
+      const metaMunicipal = 15
+      const metasMunicipales = await Promise.all(
+        coordinadoresMunicipales.map(async (coord) => {
+          const fidelizados = await fidelizacionRepo.count({
+            where: { coordinadorId: coord.id }
+          })
+          
+          // Contar personas del municipio en el padrón
+          // Como Padron no tiene idmunicipio directamente, contamos a través de los colegios
+          let totalPersonasMunicipio = 0
+          if (coord.municipioId) {
+            const colegioRepo = AppDataSource.getRepository(Colegio)
+            
+            // Obtener todos los colegios del municipio
+            const colegiosMunicipio = await colegioRepo.find({
+              where: { IDMunicipio: coord.municipioId },
+              select: ['IDColegio']
+            })
+            
+            const colegioIds = colegiosMunicipio.map(c => c.IDColegio)
+            
+            // Contar personas en esos colegios
+            if (colegioIds.length > 0) {
+              totalPersonasMunicipio = await padronRepo
+                .createQueryBuilder('padron')
+                .where('padron.idcolegio IN (:...ids)', { ids: colegioIds })
+                .getCount()
+            }
+          }
+
+          return {
+            coordinador: `${coord.firstName} ${coord.lastName}`,
+            municipio: coord.municipio?.Descripcion || 'Sin municipio',
+            totalPersonasMunicipio,
+            fidelizados,
+            meta: metaMunicipal,
+            porcentaje: Math.round((fidelizados / metaMunicipal) * 100)
+          }
+        })
+      )
+
+      // Obtener coordinadores de colegio con sus metas
+      const coordinadoresColegios = await userRepository.find({
+        where: { 
+          role: UserRole.COLEGIO,
+          isActive: true
+        },
+        select: ['id', 'firstName', 'lastName'],
+        take: 10 // Limitar para no sobrecargar
+      })
+
+      const metaColegio = 15
+      const metasColegios = await Promise.all(
+        coordinadoresColegios.map(async (coord) => {
+          const fidelizados = await fidelizacionRepo.count({
+            where: { coordinadorId: coord.id }
+          })
+          return {
+            coordinador: `${coord.firstName} ${coord.lastName}`,
+            fidelizados,
+            meta: metaColegio,
+            porcentaje: Math.round((fidelizados / metaColegio) * 100)
+          }
+        })
+      )
+
+      // Obtener coordinadores de recinto con sus metas
+      const coordinadoresRecintos = await userRepository.find({
+        where: { 
+          role: UserRole.RECINTO,
+          isActive: true
+        },
+        select: ['id', 'firstName', 'lastName'],
+        take: 10 // Limitar para no sobrecargar
+      })
+
+      const metaRecinto = 15
+      const metasRecintos = await Promise.all(
+        coordinadoresRecintos.map(async (coord) => {
+          const fidelizados = await fidelizacionRepo.count({
+            where: { coordinadorId: coord.id }
+          })
+          return {
+            coordinador: `${coord.firstName} ${coord.lastName}`,
+            fidelizados,
+            meta: metaRecinto,
+            porcentaje: Math.round((fidelizados / metaRecinto) * 100)
+          }
+        })
+      )
+
+      res.json({
+        totalMunicipales,
+        totalColegios,
+        totalRecintos,
+        metasMunicipales,
+        metasColegios,
+        metasRecintos
+      })
+    } catch (error) {
+      console.error('[UserController] Error al obtener estadísticas provinciales:', error)
+      res.status(500).json({ message: 'Error al obtener estadísticas' })
     }
   }
 }

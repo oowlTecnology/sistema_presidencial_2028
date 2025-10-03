@@ -55,11 +55,19 @@ export class AuthController {
 
       await userRepository.save(user)
 
-      // Crear token JWT
+      // Crear token JWT con todos los IDs necesarios
       const jwtSecret =
         process.env.JWT_SECRET || 'default-secret-key-for-development'
       const token = jwt.sign(
-        { userId: user.id, email: user.email, role: user.role },
+        { 
+          userId: user.id, 
+          email: user.email, 
+          role: user.role,
+          provinciaId: user.provinciaId,
+          municipioId: user.municipioId,
+          colegioId: user.colegioId,
+          recintoId: user.recintoId
+        },
         jwtSecret,
         { expiresIn: '24h' }
       )
@@ -104,11 +112,19 @@ export class AuthController {
         return res.status(401).json({ message: 'Credenciales inválidas' })
       }
 
-      // Crear token JWT
+      // Crear token JWT con todos los IDs necesarios
       const jwtSecret =
         process.env.JWT_SECRET || 'default-secret-key-for-development'
       const token = jwt.sign(
-        { userId: user.id, email: user.email, role: user.role },
+        { 
+          userId: user.id, 
+          email: user.email, 
+          role: user.role,
+          provinciaId: user.provinciaId,
+          municipioId: user.municipioId,
+          colegioId: user.colegioId,
+          recintoId: user.recintoId
+        },
         jwtSecret,
         { expiresIn: '24h' }
       )

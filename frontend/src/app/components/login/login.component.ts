@@ -162,8 +162,14 @@ export class LoginComponent {
       this.authService.login(loginData).subscribe({
         next: (response) => {
           this.isLoading = false;
-          // Redirigir al dashboard según el rol del usuario
-          this.router.navigate([`/dashboard/${response.user.role}`]);
+          // Redirigir según el rol del usuario
+          if (response.user.role === 'super_admin') {
+            this.router.navigate(['/admin']);
+          } else if (response.user.role === 'ejecutivo') {
+            this.router.navigate(['/dashboard/ejecutivo']);
+          } else {
+            this.router.navigate([`/dashboard/${response.user.role}`]);
+          }
         },
         error: (error) => {
           this.isLoading = false;

@@ -10,6 +10,7 @@ router.use(authenticateToken);
 
 // Rutas para gestión de usuarios
 router.get('/', userController.getUsers);
+router.get('/estadisticas-provincial', userController.getEstadisticasProvincial);
 router.post('/', userController.createUser);
 router.put('/:id', userController.updateUser);
 router.delete('/:id', authorizeRoles('provincial'), userController.deleteUser);
