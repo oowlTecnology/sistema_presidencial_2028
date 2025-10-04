@@ -204,7 +204,12 @@
         </div>
         
         <!-- Mapa Leaflet de República Dominicana -->
-        <div id="leaflet-map" class="leaflet-container"></div>
+        <div class="map-wrapper">
+          <button mat-mini-fab color="primary" class="reset-zoom-btn" (click)="resetMapZoom()" matTooltip="Restablecer vista">
+            <mat-icon>home</mat-icon>
+          </button>
+          <div id="leaflet-map" class="leaflet-container"></div>
+        </div>
       </mat-card-content>
     </mat-card>
 

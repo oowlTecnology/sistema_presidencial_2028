@@ -264,8 +264,11 @@ export class ExecutiveDashboardComponent implements OnInit, AfterViewInit {
       this.map.remove()
     }
 
-    // Crear mapa centrado en República Dominicana
-    this.map = L.map('leaflet-map').setView([18.7357, -70.1627], 8)
+    // Crear mapa centrado en República Dominicana con scroll zoom deshabilitado
+    this.map = L.map('leaflet-map', {
+      scrollWheelZoom: false,  // Deshabilitar zoom con scroll
+      doubleClickZoom: false   // Deshabilitar zoom con doble clic en el mapa
+    }).setView([18.7357, -70.1627], 8)
 
     // Agregar capa de tiles (OpenStreetMap)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -329,8 +332,8 @@ export class ExecutiveDashboardComponent implements OnInit, AfterViewInit {
             className: 'custom-popup'
           })
 
-          // Hacer zoom al hacer clic
-          circle.on('click', () => {
+          // Hacer zoom solo con doble clic
+          circle.on('dblclick', () => {
             this.map?.flyTo(coords, 11, {
               duration: 1.5,
               easeLinearity: 0.25
@@ -386,6 +389,15 @@ export class ExecutiveDashboardComponent implements OnInit, AfterViewInit {
 
   logout() {
     this.authService.logout()
+  }
+
+  resetMapZoom() {
+    if (this.map) {
+      this.map.flyTo([18.7357, -70.1627], 8, {
+        duration: 1.5,
+        easeLinearity: 0.25
+      })
+    }
   }
 
   async loadAndColorSVGMap() {

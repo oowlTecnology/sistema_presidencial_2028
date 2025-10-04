@@ -610,6 +610,27 @@
 }
 
 /* Mapa Leaflet */
+.map-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.reset-zoom-btn {
+  position: absolute;
+  top: 30px;
+  right: 20px;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  background: white !important;
+  color: #321fdb !important;
+}
+
+.reset-zoom-btn:hover {
+  background: #321fdb !important;
+  color: white !important;
+  transform: scale(1.05);
+}
+
 .leaflet-container {
   width: 100%;
   height: 500px;
@@ -844,17 +865,28 @@
   background: white;
 }
 
+.svg-map-card mat-card-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
 .svg-map-container {
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 20px;
-  background: #f8f9fa;
+  background: white;
   border-radius: 8px;
-  width: 100%;
+  width: 50%;
   overflow: visible;
+  margin: 0 auto;
 }
 
 .svg-map-container svg {
-  width: 100% !important;
+  width: 60% !important;
+  max-width: 600px !important;
   height: auto !important;
   display: block;
   margin: 0 auto;
