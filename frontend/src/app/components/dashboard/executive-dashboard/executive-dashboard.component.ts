@@ -130,6 +130,7 @@ export class ExecutiveDashboardComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       if (this.estadisticas) {
         this.initMap()
+        this.loadAndColorSVGMap()
       }
     }, 500)
   }
@@ -144,8 +145,11 @@ export class ExecutiveDashboardComponent implements OnInit, AfterViewInit {
         this.generarGraficos(stats)
         this.cargando = false
         console.log('[ExecutiveDashboard] Gráficos generados')
-        // Inicializar mapa después de cargar datos
-        setTimeout(() => this.initMap(), 100)
+        // Inicializar mapas después de cargar datos
+        setTimeout(() => {
+          this.initMap()
+          this.loadAndColorSVGMap()
+        }, 100)
       },
       error: (error) => {
         console.error('[ExecutiveDashboard] Error al cargar estadísticas:', error)
@@ -382,5 +386,144 @@ export class ExecutiveDashboardComponent implements OnInit, AfterViewInit {
 
   logout() {
     this.authService.logout()
+  }
+
+  async loadAndColorSVGMap() {
+    try {
+      const response = await fetch('assets/dominican-republic.svg')
+      const svgText = await response.text()
+      const container = document.getElementById('svg-map-container')
+      
+      if (container) {
+        container.innerHTML = svgText
+        const svgElement = container.querySelector('svg')
+        
+        if (svgElement && this.estadisticas) {
+          // Obtener dimensiones originales del SVG
+          const originalWidth = svgElement.getAttribute('width') || '792.71484'
+          const originalHeight = svgElement.getAttribute('height') || '556.42358'
+          
+          // Establecer viewBox si no existe
+          if (!svgElement.getAttribute('viewBox')) {
+            svgElement.setAttribute('viewBox', `0 0 ${originalWidth} ${originalHeight}`)
+          }
+          
+          // Ajustar tamaño del SVG
+          svgElement.removeAttribute('width')
+          svgElement.removeAttribute('height')
+          svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet')
+          svgElement.style.width = '100%'
+          svgElement.style.height = 'auto'
+          svgElement.style.maxWidth = '100%'
+          svgElement.style.margin = '0 auto'
+          svgElement.style.display = 'block'
+          
+          // Colorear cada provincia según sus datos
+          this.estadisticas.estadisticasPorProvincia.forEach((prov: any) => {
+            const provinciaName = this.normalizeProvinciaName(prov.provincia)
+            const paths = svgElement.querySelectorAll('path')
+            
+            paths.forEach((path) => {
+              const title = path.getAttribute('title')
+              if (title && this.normalizeProvinciaName(title) === provinciaName) {
+                const color = this.getProvinciaColorForSVG(prov.totalCoordinadores)
+                path.setAttribute('fill', color)
+                path.setAttribute('stroke', '#ffffff')
+                path.setAttribute('stroke-width', '1.5')
+                path.style.cursor = 'pointer'
+                path.style.transition = 'all 0.3s ease'
+                
+                // Agregar tooltip y eventos
+                path.addEventListener('mouseenter', () => {
+                  path.setAttribute('fill', this.lightenColor(color, 20))
+                  path.setAttribute('stroke-width', '3')
+                  this.showTooltip(prov, path)
+                })
+                
+                path.addEventListener('mouseleave', () => {
+                  path.setAttribute('fill', color)
+                  path.setAttribute('stroke-width', '1.5')
+                  this.hideTooltip()
+                })
+              }
+            })
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Error al cargar el mapa SVG:', error)
+    }
+  }
+
+  normalizeProvinciaName(name: string): string {
+    return name.toUpperCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+  }
+
+  getProvinciaColorForSVG(totalCoordinadores: number): string {
+    if (totalCoordinadores >= 3) {
+      return '#2eb85c' // Verde - Alta cobertura
+    } else if (totalCoordinadores >= 1) {
+      return '#3399ff' // Azul - Media cobertura
+    } else {
+      return '#e0e0e0' // Gris - Sin coordinadores
+    }
+  }
+
+  lightenColor(color: string, percent: number): string {
+    const num = parseInt(color.replace('#', ''), 16)
+    const amt = Math.round(2.55 * percent)
+    const R = (num >> 16) + amt
+    const G = (num >> 8 & 0x00FF) + amt
+    const B = (num & 0x0000FF) + amt
+    return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+      (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+      (B < 255 ? B < 1 ? 0 : B : 255))
+      .toString(16).slice(1)
+  }
+
+  showTooltip(prov: any, element: SVGPathElement) {
+    const tooltip = document.createElement('div')
+    tooltip.id = 'svg-tooltip'
+    tooltip.className = 'svg-tooltip'
+    tooltip.innerHTML = `
+      <div class="tooltip-header">${prov.provincia}</div>
+      <div class="tooltip-body">
+        <div class="tooltip-row">
+          <span>Provinciales:</span>
+          <strong>${prov.coordinadoresProvinciales}</strong>
+        </div>
+        <div class="tooltip-row">
+          <span>Municipales:</span>
+          <strong>${prov.coordinadoresMunicipales}</strong>
+        </div>
+        <div class="tooltip-row">
+          <span>Circunscripción:</span>
+          <strong>${prov.coordinadoresCircunscripcion}</strong>
+        </div>
+        <div class="tooltip-row total">
+          <span>Total Coordinadores:</span>
+          <strong>${prov.totalCoordinadores}</strong>
+        </div>
+        <div class="tooltip-row fidelizaciones">
+          <span>Fidelizaciones:</span>
+          <strong>${prov.fidelizaciones}</strong>
+        </div>
+      </div>
+    `
+    document.body.appendChild(tooltip)
+    
+    const rect = element.getBoundingClientRect()
+    tooltip.style.left = rect.left + rect.width / 2 + 'px'
+    tooltip.style.top = rect.top - 10 + 'px'
+  }
+
+  hideTooltip() {
+    const tooltip = document.getElementById('svg-tooltip')
+    if (tooltip) {
+      tooltip.remove()
+    }
   }
 }

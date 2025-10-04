@@ -838,3 +838,166 @@
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
 }
+
+/* Mapa SVG República Dominicana */
+.svg-map-card {
+  background: white;
+}
+
+.svg-map-container {
+  display: block;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  width: 100%;
+  overflow: visible;
+}
+
+.svg-map-container svg {
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+}
+
+.svg-map {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
+}
+
+.svg-map:hover {
+  transform: scale(1.02);
+}
+
+/* Leyenda horizontal */
+.map-legend-horizontal {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 20px;
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  flex-wrap: wrap;
+}
+
+.map-legend-horizontal .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.map-legend-horizontal .legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Tooltip para el mapa SVG */
+::ng-deep .svg-tooltip {
+  position: fixed;
+  background: white;
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+  min-width: 250px;
+  transform: translate(-50%, -100%);
+  margin-top: -10px;
+  pointer-events: none;
+  animation: tooltipFadeIn 0.2s ease;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -90%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -100%);
+  }
+}
+
+::ng-deep .svg-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid white;
+}
+
+::ng-deep .tooltip-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 8px 8px 0 0;
+  text-align: center;
+}
+
+::ng-deep .tooltip-body {
+  padding: 12px 16px;
+}
+
+::ng-deep .tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.875rem;
+}
+
+::ng-deep .tooltip-row:last-child {
+  border-bottom: none;
+}
+
+::ng-deep .tooltip-row.total {
+  background: #f8f9fa;
+  margin: 8px -16px 8px -16px;
+  padding: 8px 16px;
+  font-weight: 600;
+  color: #321fdb;
+}
+
+::ng-deep .tooltip-row.fidelizaciones {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  margin: 8px -16px -12px -16px;
+  padding: 10px 16px;
+  border-radius: 0 0 8px 8px;
+  font-weight: 600;
+}
+
+::ng-deep .tooltip-row span {
+  color: #666;
+}
+
+::ng-deep .tooltip-row.total span,
+::ng-deep .tooltip-row.fidelizaciones span {
+  color: inherit;
+}
+
+::ng-deep .tooltip-row strong {
+  color: #333;
+  font-weight: 600;
+}
+
+::ng-deep .tooltip-row.total strong,
+::ng-deep .tooltip-row.fidelizaciones strong {
+  color: inherit;
+}

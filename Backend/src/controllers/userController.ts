@@ -48,32 +48,11 @@ export class UserController {
           'isActive',
           'phoneNumber',
           'address',
-          'createdByUserId',
           'createdAt',
         ],
       })
 
-      // Enriquecer con datos del creador
-      const creatorIds = Array.from(
-        new Set(users.map((u) => u.createdByUserId).filter((id): id is number => !!id))
-      )
-      let creatorsMap: Record<number, { id: number; firstName: string; lastName: string; email: string }> = {}
-      if (creatorIds.length > 0) {
-        const creators = await userRepository.find({
-          where: creatorIds.map((id) => ({ id })),
-          select: ['id', 'firstName', 'lastName', 'email'],
-        })
-        creatorsMap = Object.fromEntries(
-          creators.map((c) => [c.id, { id: c.id, firstName: c.firstName, lastName: c.lastName, email: c.email }])
-        )
-      }
-
-      const result = users.map((u) => ({
-        ...u,
-        creator: u.createdByUserId ? creatorsMap[u.createdByUserId] : null,
-      }))
-
-      res.json(result)
+      res.json(users)
     } catch (error) {
       console.error('Error al obtener usuarios:', error)
       res.status(500).json({ message: 'Error interno del servidor' })
@@ -211,7 +190,6 @@ export class UserController {
         phoneNumber,
         address,
         isActive: true,
-        createdByUserId: currentUser.id,
         provinciaId: norm(validatedIds.provinciaId ?? provinciaId),
         municipioId: norm(validatedIds.municipioId ?? municipioId),
         circunscripcionId: norm(validatedIds.circunscripcionId ?? circunscripcionId),
@@ -240,19 +218,12 @@ export class UserController {
         phoneNumber: userObj.phoneNumber,
         address: userObj.address,
         isActive: userObj.isActive,
-        createdByUserId: userObj.createdByUserId,
         provinciaId: userObj.provinciaId,
         municipioId: userObj.municipioId,
         colegioId: userObj.colegioId,
         recintoId: userObj.recintoId,
         createdAt: userObj.createdAt,
         updatedAt: userObj.updatedAt,
-        creator: {
-          id: currentUser.id,
-          firstName: currentUser.firstName,
-          lastName: currentUser.lastName,
-          email: currentUser.email,
-        },
       }
 
       res.status(201).json({

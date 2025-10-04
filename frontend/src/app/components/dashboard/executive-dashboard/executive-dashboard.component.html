@@ -244,6 +244,36 @@
         </mat-card-content>
       </mat-card>
 
+      <!-- Mapa SVG República Dominicana -->
+      <mat-card class="chart-card full-width svg-map-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>map</mat-icon>
+            Mapa República Dominicana - Cobertura por Provincia
+          </mat-card-title>
+          <mat-card-subtitle>Provincias con coordinadores activos</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="map-legend-horizontal">
+            <div class="legend-item">
+              <span class="legend-color" style="background: #2eb85c;"></span>
+              <span>Alta (3+ coordinadores)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color" style="background: #3399ff;"></span>
+              <span>Media (1-2 coordinadores)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color" style="background: #e0e0e0;"></span>
+              <span>Sin coordinadores</span>
+            </div>
+          </div>
+          <div class="svg-map-container" id="svg-map-container">
+            <!-- El SVG se cargará dinámicamente aquí -->
+          </div>
+        </mat-card-content>
+      </mat-card>
+
       <!-- Top Coordinadores -->
       <mat-card class="chart-card full-width">
         <mat-card-header>
