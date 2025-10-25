@@ -2,6 +2,9 @@
   <mat-toolbar color="primary" class="toolbar-executive">
     <div class="toolbar-content">
       <div class="toolbar-left">
+        <button mat-icon-button class="sidebar-toggle" (click)="toggleSidebar()">
+          <mat-icon>menu</mat-icon>
+        </button>
         <mat-icon class="dashboard-icon">dashboard</mat-icon>
         <span class="title">Dashboard Ejecutivo</span>
         <span class="subtitle">Gana tu Colegio 2028</span>
@@ -19,7 +22,115 @@
     </div>
   </mat-toolbar>
 
-  <div class="dashboard-content" *ngIf="!cargando; else loadingTemplate">
+  <div class="dashboard-layout">
+    <!-- Aside/Sidebar -->
+    <aside class="dashboard-aside" [class.collapsed]="sidebarCollapsed">
+      <div class="aside-header">
+        <div class="user-info" *ngIf="!sidebarCollapsed">
+          <div class="user-avatar">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+          <div class="user-details">
+            <h3>{{ currentUser?.firstName }} {{ currentUser?.lastName }}</h3>
+            <p class="user-role">Vista Ejecutiva</p>
+          </div>
+        </div>
+        <div class="user-info-collapsed" *ngIf="sidebarCollapsed">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+      </div>
+
+      <nav class="aside-navigation">
+        <div class="nav-section">
+          <h4 *ngIf="!sidebarCollapsed">Navegación</h4>
+          <ul class="nav-list">
+            <li class="nav-item active">
+              <a href="#overview" class="nav-link">
+                <mat-icon>dashboard</mat-icon>
+                <span *ngIf="!sidebarCollapsed">Resumen General</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#kpis" class="nav-link">
+                <mat-icon>analytics</mat-icon>
+                <span *ngIf="!sidebarCollapsed">KPIs Principales</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#map" class="nav-link">
+                <mat-icon>map</mat-icon>
+                <span *ngIf="!sidebarCollapsed">Mapa de Cobertura</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#charts" class="nav-link">
+                <mat-icon>pie_chart</mat-icon>
+                <span *ngIf="!sidebarCollapsed">Gráficos</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#provinces" class="nav-link">
+                <mat-icon>table_chart</mat-icon>
+                <span *ngIf="!sidebarCollapsed">Detalle Provincias</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-section" *ngIf="!sidebarCollapsed">
+          <h4>Estadísticas Rápidas</h4>
+          <div class="quick-stats-aside">
+            <div class="stat-item-aside">
+              <mat-icon class="stat-icon-aside">people</mat-icon>
+              <div class="stat-info-aside">
+                <span class="stat-number-aside">{{ estadisticas?.resumen?.totalUsuariosActivos || 0 }}</span>
+                <span class="stat-label-aside">Usuarios Activos</span>
+              </div>
+            </div>
+            <div class="stat-item-aside">
+              <mat-icon class="stat-icon-aside">favorite</mat-icon>
+              <div class="stat-info-aside">
+                <span class="stat-number-aside">{{ estadisticas?.resumen?.totalFidelizaciones || 0 }}</span>
+                <span class="stat-label-aside">Fidelizaciones</span>
+              </div>
+            </div>
+            <div class="stat-item-aside">
+              <mat-icon class="stat-icon-aside">trending_up</mat-icon>
+              <div class="stat-info-aside">
+                <span class="stat-number-aside">{{ estadisticas?.resumen?.porcentajeFidelizacion || 0 }}%</span>
+                <span class="stat-label-aside">Cobertura</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-section">
+          <h4 *ngIf="!sidebarCollapsed">Acciones Rápidas</h4>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a routerLink="/users" class="nav-link">
+                <mat-icon>people_alt</mat-icon>
+                <span *ngIf="!sidebarCollapsed">Gestionar Usuarios</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#reports" class="nav-link">
+                <mat-icon>assessment</mat-icon>
+                <span *ngIf="!sidebarCollapsed">Generar Reportes</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#settings" class="nav-link">
+                <mat-icon>settings</mat-icon>
+                <span *ngIf="!sidebarCollapsed">Configuración</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <div class="dashboard-content" [class.sidebar-collapsed]="sidebarCollapsed" *ngIf="!cargando; else loadingTemplate">
     <!-- Header con bienvenida y resumen -->
     <div class="welcome-header">
       <div class="welcome-text">
@@ -351,6 +462,7 @@
         </mat-paginator>
       </mat-card-content>
     </mat-card>
+    </div>
   </div>
 
   <ng-template #loadingTemplate>

@@ -39,6 +39,7 @@ export class ExecutiveDashboardComponent implements OnInit, AfterViewInit {
   currentUser: User | null = null
   estadisticas: EstadisticasEjecutivas | null = null
   cargando = false
+  sidebarCollapsed = false
   private map: L.Map | null = null
   
   // Paginación
@@ -385,6 +386,10 @@ export class ExecutiveDashboardComponent implements OnInit, AfterViewInit {
   onPageChange(event: any) {
     this.pageIndex = event.pageIndex
     this.pageSize = event.pageSize
+  }
+
+  toggleSidebar() {
+    this.sidebarCollapsed = !this.sidebarCollapsed
   }
 
   logout() {
