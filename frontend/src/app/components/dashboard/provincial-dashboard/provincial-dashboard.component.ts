@@ -741,3 +741,4 @@ export class ProvincialDashboardComponent implements OnInit {
     this.authService.logout()
   }
 }
+

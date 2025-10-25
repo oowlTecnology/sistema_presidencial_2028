@@ -21,3 +21,4 @@ SELECT 'Base de datos gana_tu_colegio creada exitosamente' as mensaje;
 
 
 
+

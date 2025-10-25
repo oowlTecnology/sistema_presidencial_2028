@@ -22,3 +22,4 @@ SELECT 'Base de datos gana_tu_colegio creada exitosamente en SQL Server' as mens
 
 
 
+
