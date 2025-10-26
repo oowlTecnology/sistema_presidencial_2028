@@ -14,6 +14,10 @@
           <mat-icon>admin_panel_settings</mat-icon>
           Panel Admin
         </button>
+        <button mat-raised-button color="primary" routerLink="/funcionarios" *ngIf="currentUser?.role === 'super_admin' || currentUser?.role === 'funcionarios'">
+          <mat-icon>people</mat-icon>
+          Funcionarios PRM
+        </button>
         <button mat-button (click)="logout()">
           <mat-icon>logout</mat-icon>
           Cerrar Sesión
@@ -123,6 +127,18 @@
               <a href="#settings" class="nav-link">
                 <mat-icon>settings</mat-icon>
                 <span *ngIf="!sidebarCollapsed">Configuración</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Sección de cerrar sesión -->
+        <div class="nav-section logout-section">
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a class="nav-link logout-link" (click)="logout()">
+                <mat-icon>logout</mat-icon>
+                <span *ngIf="!sidebarCollapsed">Cerrar Sesión</span>
               </a>
             </li>
           </ul>

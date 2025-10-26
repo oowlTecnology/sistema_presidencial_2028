@@ -50,6 +50,11 @@ export const routes: Routes = [
         path: 'recinto',
         loadComponent: () => import('./components/dashboard/recinto-dashboard/recinto-dashboard.component').then(m => m.RecintoDashboardComponent),
         canActivate: [roleGuard(['recinto'])]
+      },
+      {
+        path: 'funcionarios',
+        loadComponent: () => import('./components/funcionarios/funcionarios.component').then(m => m.FuncionariosComponent),
+        canActivate: [roleGuard(['super_admin', 'funcionarios'])]
       }
     ]
   },
@@ -62,6 +67,11 @@ export const routes: Routes = [
     path: 'admin',
     canActivate: [adminGuard],
     loadComponent: () => import('./components/admin-panel/admin-panel.component').then(m => m.AdminPanelComponent)
+  },
+  {
+    path: 'funcionarios',
+    canActivate: [authGuard, roleGuard(['super_admin', 'funcionarios', 'provincial', 'municipal'])],
+    loadComponent: () => import('./components/funcionarios/funcionarios.component').then(m => m.FuncionariosComponent)
   },
   {
     path: '**',

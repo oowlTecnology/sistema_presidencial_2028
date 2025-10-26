@@ -1,0 +1,300 @@
+<!-- Dashboard de Funcionarios - Estilo PRM Login -->
+<div class="funcionarios-dashboard funcionarios-component prm-style">
+  <!-- Header PRM con logo -->
+  <header class="prm-header">
+    <div class="prm-logo-container">
+      <div class="prm-logo">
+        <mat-icon class="prm-icon">account_balance</mat-icon>
+        <div class="prm-text">
+          <h1>Partido Revolucionario Moderno</h1>
+          <h2>Sistema de Funcionarios</h2>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Layout con sidebar y contenido -->
+  <div class="dashboard-layout">
+    <!-- Sidebar izquierdo -->
+    <aside class="sidebar">
+      <!-- Sección de estadísticas en sidebar -->
+      <div class="sidebar-stats">
+        <h3><mat-icon>bar_chart</mat-icon> ESTADÍSTICAS</h3>
+        
+        <div class="sidebar-stat-card">
+          <mat-icon class="stat-icon">people</mat-icon>
+          <div class="stat-content">
+            <div class="stat-number">{{ estadisticas.totalFuncionarios || 0 }}</div>
+            <div class="stat-label">Total Funcionarios</div>
+          </div>
+        </div>
+
+        <div class="sidebar-stat-card">
+          <mat-icon class="stat-icon">location_on</mat-icon>
+          <div class="stat-content">
+            <div class="stat-number">{{ estadisticas.provincias || 0 }}</div>
+            <div class="stat-label">Provincias</div>
+          </div>
+        </div>
+
+        <div class="sidebar-stat-card">
+          <mat-icon class="stat-icon">location_city</mat-icon>
+          <div class="stat-content">
+            <div class="stat-number">{{ estadisticas.municipios || 0 }}</div>
+            <div class="stat-label">Municipios</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtros por ubicación -->
+      <div class="sidebar-filters">
+        <h3><mat-icon>location_on</mat-icon> FILTRAR POR UBICACIÓN</h3>
+        
+        <div class="filter-group">
+          <label>Provincia</label>
+          <div class="sidebar-select">
+            <mat-form-field appearance="outline">
+              <mat-select [(ngModel)]="selectedProvinciaId" (selectionChange)="onProvinciaChange($event)" placeholder="Seleccionar provincia">
+                <mat-option [value]="null">Seleccionar provincia</mat-option>
+                <mat-option *ngFor="let provincia of provincias" [value]="provincia.ID">
+                  {{ provincia.Descripcion }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Municipio</label>
+          <div class="sidebar-select">
+            <mat-form-field appearance="outline">
+              <mat-select [(ngModel)]="selectedMunicipioId" (selectionChange)="onMunicipioChange($event)" placeholder="Seleccionar municipio">
+                <mat-option [value]="null">Seleccionar municipio</mat-option>
+                <mat-option *ngFor="let municipio of municipios" [value]="municipio.ID">
+                  {{ municipio.Descripcion }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <button mat-stroked-button (click)="clearFilters()" class="clear-filters-btn">
+          <mat-icon>clear</mat-icon>
+          Limpiar Filtros
+        </button>
+      </div>
+
+      <!-- Otros filtros -->
+      <div class="sidebar-other-filters">
+        <h3 class="section-title">
+          <mat-icon>tune</mat-icon>
+          OTROS FILTROS
+        </h3>
+        
+        <div class="filter-card">
+          <mat-icon>schedule</mat-icon>
+          <div class="filter-content">
+            <div class="filter-title">Recientes</div>
+            <div class="filter-subtitle">Últimas consultas</div>
+          </div>
+        </div>
+        
+        <div class="filter-card">
+          <mat-icon>search</mat-icon>
+          <div class="filter-content">
+            <div class="filter-title">Búsqueda</div>
+            <div class="filter-subtitle">Buscar por nombre</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Usuario -->
+      <div class="sidebar-section">
+        <h3 class="section-title">
+          <mat-icon>person</mat-icon>
+          USUARIO
+        </h3>
+        
+        <div class="user-info">
+          <div class="user-avatar">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+          <div class="user-details">
+            <div class="user-name">Admin Sistema</div>
+            <div class="user-email">admin&#64;prm.gov.do</div>
+            <div class="user-role">⭐ Administrador</div>
+            <div class="user-access">Acceso completo a todas las provi...</div>
+          </div>
+        </div>
+        
+        <button class="logout-btn" mat-stroked-button (click)="logout()">
+          <mat-icon>exit_to_app</mat-icon>
+          Cerrar Sesión
+        </button>
+      </div>
+
+      <!-- Sistema -->
+      <div class="sidebar-section">
+        <h3 class="section-title">
+          <mat-icon>info</mat-icon>
+          SISTEMA
+        </h3>
+        
+        <div class="system-info">
+          <div class="system-item">
+            <span class="system-label">Última actualización:</span>
+            <span class="system-value">10/25/25, 8:40 PM</span>
+          </div>
+          <div class="system-item">
+            <span class="system-label">Estado:</span>
+            <span class="system-value online">🟢 En línea</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+      <!-- Header principal -->
+      <header class="dashboard-header">
+        <div class="header-content">
+          <div class="header-left">
+            <mat-icon class="header-icon">dashboard</mat-icon>
+            <div class="header-text">
+              <h1>Dashboard de Funcionarios</h1>
+              <p>Sistema de gestión y consulta del PRM</p>
+            </div>
+          </div>
+          
+          <div class="header-actions">
+            <button mat-stroked-button color="primary" (click)="reloadStats()">
+              <mat-icon>refresh</mat-icon>
+              Recargar Stats
+            </button>
+            <button mat-raised-button color="primary" (click)="addFuncionario()" *ngIf="canManage">
+              <mat-icon>add</mat-icon>
+              Nuevo Funcionario
+            </button>
+            <button mat-stroked-button (click)="exportData()">
+              <mat-icon>download</mat-icon>
+              Exportar
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Área de scroll que incluye estadísticas y funcionarios -->
+      <div class="funcionarios-section">
+        <!-- Estadísticas dentro del scroll -->
+        <div class="stats-section">
+          <div class="stat-card blue">
+            <div class="stat-icon">
+              <mat-icon>group</mat-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number">{{ estadisticas.totalFuncionarios || 0 }}</div>
+              <div class="stat-label">Funcionarios</div>
+              <div class="stat-sublabel">Activos</div>
+              <div class="stat-trend positive">
+                <mat-icon>trending_up</mat-icon>
+                <span>+12% este mes</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card green">
+            <div class="stat-icon">
+              <mat-icon>map</mat-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number">{{ estadisticas.provincias || 1 }}</div>
+              <div class="stat-label">Provincias</div>
+              <div class="stat-sublabel">Cubiertas</div>
+              <div class="stat-trend positive">
+                <mat-icon>check_circle</mat-icon>
+                <span>Con funcionarios</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card purple">
+            <div class="stat-icon">
+              <mat-icon>apartment</mat-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number">{{ estadisticas.municipios || 1 }}</div>
+              <div class="stat-label">Municipios Activos</div>
+              <div class="stat-sublabel"></div>
+              <div class="stat-trend positive">
+                <mat-icon>trending_up</mat-icon>
+                <span>+5% este mes</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card orange">
+            <div class="stat-icon">
+              <mat-icon>search</mat-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number">{{ estadisticas.consultas || 0 }}</div>
+              <div class="stat-label">Consultas</div>
+              <div class="stat-sublabel">Realizadas</div>
+              <div class="stat-trend positive">
+                <mat-icon>trending_up</mat-icon>
+                <span>+28% este mes</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mensaje de error dentro del scroll -->
+        <div class="alert alert-danger" *ngIf="error" role="alert">
+          <mat-icon>error</mat-icon>
+          <div class="alert-content">
+            <strong>Error al cargar funcionarios</strong>
+            <p>{{ error }}</p>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading-state" *ngIf="loading">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p>Cargando funcionarios...</p>
+        </div>
+
+        <!-- Grid de funcionarios -->
+        <div class="funcionarios-grid" *ngIf="!loading && getFilteredFuncionarios().length > 0">
+          <div class="row g-4">
+            <div 
+              *ngFor="let funcionario of getFilteredFuncionarios()" 
+              class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+              <div class="funcionario-card" (click)="viewFuncionario(funcionario)">
+                <div class="photo-container">
+                  <img 
+                    [src]="funcionario.fotoBase64 || getDefaultImage()" 
+                    [alt]="funcionario.nombre"
+                    class="funcionario-photo"
+                    (error)="onImageError($event)">
+                </div>
+                <div class="funcionario-info">
+                  <h3 class="funcionario-name">{{ funcionario.nombre || 'Sin nombre' }}</h3>
+                  <p class="funcionario-cargo">{{ funcionario.cargo }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advertencia elegante -->
+        <div class="alert alert-warning" *ngIf="!loading && getFilteredFuncionarios().length === 0" role="alert">
+          <mat-icon>info</mat-icon>
+          <div class="alert-content">
+            <strong>Selecciona una ubicación</strong>
+            <p>Para ver los funcionarios, selecciona una provincia o municipio en los filtros del sidebar.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

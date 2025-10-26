@@ -1,0 +1,1273 @@
+// Estilos para el Dashboard de Funcionarios - Diseño Original// Contenedor principal
+.funcionarios-dashboard {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+}
+
+// Header PRM con logo
+.prm-header {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 20px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  
+  .prm-logo-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .prm-logo {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    
+    .prm-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      color: #3b82f6;
+      background: #f1f5f9;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .prm-text {
+      h1 {
+        color: #1e293b;
+        font-size: 28px;
+        font-weight: bold;
+        margin: 0;
+      }
+      
+      h2 {
+        color: #64748b;
+        font-size: 16px;
+        font-weight: 500;
+        margin: 4px 0 0 0;
+      }
+    }
+  }
+}
+
+.dashboard-layout {
+  display: flex;
+  height: calc(100vh - 88px);
+  overflow: hidden;
+}
+
+// Sidebar izquierdo
+.sidebar {
+  width: 320px;
+  background: linear-gradient(180deg, #2c5aa0 0%, #1e3a8a 100%);
+  color: white;
+  padding: 0;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 88px;
+  height: calc(100vh - 88px);
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+// Estadísticas en sidebar
+.sidebar-stats {
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #93c5fd;
+    margin: 0 0 20px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+.sidebar-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  border-left: 4px solid #60a5fa;
+  
+  .stat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    color: #60a5fa;
+  }
+  
+  .stat-content {
+    flex: 1;
+    
+    .stat-number {
+      font-size: 24px;
+      font-weight: 700;
+      color: white;
+      line-height: 1;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #93c5fd;
+      margin-top: 2px;
+    }
+  }
+}
+
+// Filtros en sidebar
+.sidebar-filters {
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #93c5fd;
+    margin: 0 0 20px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+.filter-group {
+  margin-bottom: 16px;
+  
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #93c5fd;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .sidebar-select {
+    width: 100%;
+    
+    .mat-mdc-form-field {
+      width: 100% !important;
+    }
+  }
+}
+
+.sidebar-select {
+  width: 100%;
+  margin-bottom: 16px;
+  
+  ::ng-deep .mat-mdc-form-field {
+    width: 100% !important;
+    
+    .mat-mdc-text-field-wrapper {
+      background-color: rgba(255, 255, 255, 0.1) !important;
+      border-radius: 8px !important;
+      height: 48px !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      padding: 0 !important;
+    }
+    
+    .mat-mdc-form-field-outline,
+    .mat-mdc-form-field-outline-start,
+    .mat-mdc-form-field-outline-end,
+    .mat-mdc-form-field-outline-gap {
+      display: none !important;
+    }
+    
+    .mdc-floating-label {
+      display: none !important;
+    }
+    
+    .mat-mdc-select {
+      color: white !important;
+      padding: 0 16px !important;
+      height: 48px !important;
+      line-height: 48px !important;
+      font-size: 14px !important;
+    }
+    
+    .mat-mdc-select-value,
+    .mat-mdc-select-value-text {
+      color: white !important;
+      font-size: 14px !important;
+    }
+    
+    .mat-mdc-select-placeholder {
+      color: rgba(255, 255, 255, 0.7) !important;
+      font-size: 14px !important;
+    }
+    
+    .mat-mdc-select-arrow {
+      color: white !important;
+    }
+  }
+}
+
+.clear-filters-btn {
+  width: 100%;
+  margin-top: 16px;
+  color: #93c5fd !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+// Otros filtros
+.sidebar-other-filters {
+  padding: 24px 20px;
+  
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #93c5fd;
+    margin: 0 0 20px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+.filter-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+  
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #60a5fa;
+  }
+  
+  .filter-content {
+    flex: 1;
+    
+    .filter-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: white;
+    }
+    
+    .filter-subtitle {
+      font-size: 12px;
+      color: #93c5fd;
+      margin-top: 2px;
+    }
+  }
+}
+
+// Contenido principal
+.main-content {
+  flex: 1;
+  margin-left: 320px;
+  margin-top: 88px;
+  background-color: #f8fafc;
+  min-height: calc(100vh - 88px);
+  display: flex;
+  flex-direction: column;
+}
+
+// Header principal
+.dashboard-header {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #3b82f6;
+}
+
+.header-text {
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+  }
+  
+  p {
+    margin: 4px 0 0 0;
+    font-size: 14px;
+    color: #64748b;
+  }
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  
+  button {
+    height: 40px;
+    font-weight: 500;
+    border-radius: 8px;
+  }
+}
+
+// Sección de estadísticas dentro del scroll
+.stats-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 32px 0 32px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.3s ease;
+  min-height: 120px;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+  
+  &.blue {
+    border-left: 4px solid #3b82f6;
+    
+    .stat-icon {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+  }
+  
+  &.green {
+    border-left: 4px solid #10b981;
+    
+    .stat-icon {
+      background: linear-gradient(135deg, #10b981, #047857);
+    }
+  }
+  
+  &.purple {
+    border-left: 4px solid #8b5cf6;
+    
+    .stat-icon {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+  }
+  
+  &.orange {
+    border-left: 4px solid #f59e0b;
+    
+    .stat-icon {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+  }
+}
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  
+  mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    color: white;
+  }
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.stat-sublabel {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.stat-trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  
+  &.positive {
+    color: #10b981;
+  }
+  
+  &.neutral {
+    color: #6b7280;
+  }
+  
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+  
+  span {
+    font-size: 12px;
+    font-weight: 500;
+  }
+}
+
+// Sección de funcionarios con scroll hasta el footer
+.funcionarios-section {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  
+  // Mensajes de alerta dentro del scroll
+  .alert {
+    max-width: 1400px;
+    margin: 40px 32px 40px 32px;
+    padding: 24px 28px;
+    border-radius: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    mat-icon {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    
+    .alert-content {
+      flex: 1;
+      
+      strong {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      
+      p {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.9;
+      }
+    }
+    
+    &.alert-danger {
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      
+      mat-icon {
+        color: #dc2626;
+      }
+    }
+    
+    &.alert-warning {
+      background-color: #fffbeb;
+      border: 1px solid #fed7aa;
+      color: #d97706;
+      
+      mat-icon {
+        color: #d97706;
+      }
+    }
+  }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  
+  .empty-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    
+    mat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: #94a3b8;
+    }
+  }
+  
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 8px 0;
+  }
+  
+  p {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+    max-width: 400px;
+  }
+}
+
+// Grid de funcionarios - Estilo PRM Original
+.funcionarios-grid {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 32px 32px 32px;
+  
+  .row {
+    margin: 0;
+  }
+  
+  .col-xl-3, .col-lg-4, .col-md-6, .col-sm-12 {
+    padding: 12px;
+  }
+  
+  .funcionario-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px 15px 20px 15px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+    cursor: pointer;
+    border: none;
+    overflow: hidden;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    }
+    
+    &:active {
+      transform: translateY(-2px);
+    }
+    
+    .photo-container {
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: center;
+      
+      .funcionario-photo {
+        width: 140px;
+        height: 160px;
+        object-fit: cover;
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        display: block;
+        
+        &:hover {
+          transform: scale(1.02);
+        }
+      }
+    }
+    
+    .funcionario-info {
+      .funcionario-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        line-height: 1.2;
+        color: #1e293b;
+      }
+      
+      .funcionario-cargo {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin: 0;
+        font-weight: 500;
+        line-height: 1.3;
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 280px;
+  }
+  
+  .main-content {
+    margin-left: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+  
+  .header-content {
+    padding: 16px 20px;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: stretch;
+    
+    button {
+      flex: 1;
+    }
+  }
+  
+  .stats-section {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 20px;
+    gap: 16px;
+  }
+  
+  .funcionarios-section {
+    padding: 0 20px 20px 20px;
+  }
+  
+  .funcionarios-grid {
+    .funcionario-card {
+      padding: 20px 15px 15px 15px;
+      
+      .photo-container {
+        margin-bottom: 12px;
+        
+        .funcionario-photo {
+          width: 120px;
+          height: 140px;
+        }
+      }
+      
+      .funcionario-info {
+        .funcionario-name {
+          font-size: 1rem;
+        }
+        
+        .funcionario-cargo {
+          font-size: 0.85rem;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .funcionarios-section {
+    padding: 0 10px 10px 10px;
+  }
+  
+  .funcionarios-grid {
+    .funcionario-card {
+      padding: 15px 10px;
+      
+      .photo-container .funcionario-photo {
+        width: 110px;
+        height: 130px;
+      }
+    }
+  }
+}
+// Estilos para snackbar
+::ng-deep .error-snackbar {
+  background-color: #f44336;
+  color: white;
+}
+
+::ng-deep .success-snackbar {
+  background-color: #4caf50;
+  color: white;
+}
+
+// Estilos globales para el modal de funcionario - Exacto como la imagen
+::ng-deep .funcionario-detail-dialog {
+  .mat-mdc-dialog-container {
+    background: #1e3a8a !important;
+    border-radius: 20px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4) !important;
+    backdrop-filter: blur(15px) !important;
+    max-width: 500px !important;
+    width: 90vw !important;
+    max-height: 600px !important;
+    min-height: 450px !important;
+  }
+  
+  .mat-mdc-dialog-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-height: none !important;
+    color: white !important;
+  }
+  
+  // Botón cerrar
+  .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    mat-icon {
+      font-size: 16px;
+    }
+  }
+  
+  // Contenido principal
+  .modal-content {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+    align-items: center;
+    
+    .funcionario-photo {
+      flex-shrink: 0;
+      
+      img {
+        width: 120px;
+        height: 140px;
+        border-radius: 12px;
+        object-fit: cover;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+    }
+    
+    .funcionario-info {
+      flex: 1;
+      
+      .cargo-badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 15px;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-block;
+        margin-bottom: 10px;
+      }
+      
+      .funcionario-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: white;
+        margin: 0 0 15px 0;
+        line-height: 1.2;
+      }
+      
+      .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        
+        .contact-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: rgba(255, 255, 255, 0.1);
+          padding: 8px 12px;
+          border-radius: 20px;
+          
+          mat-icon {
+            color: white;
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+          
+          span {
+            font-size: 14px;
+            color: white;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+    
+    .sidebar-right {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      
+      .provincia-section {
+        text-align: center;
+        
+        .provincia-label {
+          font-size: 10px;
+          color: rgba(255, 255, 255, 0.8);
+          margin-bottom: 2px;
+        }
+        
+        .provincia-name {
+          font-size: 14px;
+          font-weight: 600;
+          color: white;
+          margin: 0;
+        }
+      }
+      
+      .location-card {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        
+        mat-icon {
+          color: white;
+          font-size: 24px;
+          margin-bottom: 8px;
+          display: block;
+        }
+        
+        span {
+          color: white;
+          font-size: 11px;
+          font-weight: 500;
+          line-height: 1.2;
+        }
+      }
+      
+      .flag-container {
+        img {
+          width: 50px;
+          height: 35px;
+          border-radius: 4px;
+          object-fit: cover;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+      }
+    }
+  }
+}
+
+::ng-deep .funcionario-detail-backdrop {
+  background: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+// Estilo de respaldo simple para los dropdowns
+.filter-group {
+  .clear-filters-btn {
+    width: 100%;
+    margin-top: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+  
+  select {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    
+    option {
+      background-color: #1e293b;
+      color: white;
+    }
+  }
+}
+
+// Otros filtros
+.sidebar-other-filters {
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// Secciones del sidebar
+.sidebar-section {
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 16px 0;
+  letter-spacing: 0.5px;
+  
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.filter-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+  
+  mat-icon {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  .filter-content {
+    .filter-title {
+      color: white;
+      font-weight: 500;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+    
+    .filter-subtitle {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+    }
+  }
+}
+
+// Usuario
+.user-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  
+  .user-avatar {
+    mat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+  
+  .user-details {
+    flex: 1;
+    
+    .user-name {
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+    
+    .user-email {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    
+    .user-role {
+      color: #fbbf24;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    
+    .user-access {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 11px;
+      font-style: italic;
+    }
+  }
+}
+
+.logout-btn {
+  width: 100%;
+  background: #dc2626;
+  border: 1px solid #dc2626;
+  color: white;
+  font-weight: 500;
+  
+  &:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+  }
+  
+  mat-icon {
+    margin-right: 8px;
+    color: white;
+  }
+}
+
+// Sistema
+.system-info {
+  .system-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    
+    .system-label {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+    }
+    
+    .system-value {
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+      
+      &.online {
+        color: #10b981;
+      }
+    }
+  }
+}
+
+// Estilos globales más específicos para los selects del sidebar
+::ng-deep .funcionarios-component .sidebar-select,
+::ng-deep .sidebar-select {
+  .mat-mdc-form-field {
+    width: 100% !important;
+  }
+  
+  .mat-mdc-form-field-wrapper {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    height: 48px !important;
+  }
+  
+  .mat-mdc-form-field-outline {
+    display: none !important;
+  }
+  
+  .mat-mdc-form-field-flex {
+    background-color: transparent !important;
+    height: 48px !important;
+    align-items: center !important;
+  }
+  
+  .mat-mdc-form-field-infix {
+    border: none !important;
+    padding: 0 16px !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  .mat-mdc-select {
+    color: white !important;
+    font-size: 14px !important;
+    height: 48px !important;
+    line-height: 48px !important;
+  }
+  
+  .mat-mdc-select-value,
+  .mat-mdc-select-value-text {
+    color: white !important;
+    font-size: 14px !important;
+  }
+  
+  .mat-mdc-select-placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-size: 14px !important;
+  }
+  
+  .mat-mdc-select-arrow {
+    color: white !important;
+  }
+  
+  .mdc-floating-label {
+    display: none !important;
+  }
+  
+  // Estilos adicionales para el trigger del select
+  .mat-mdc-select-trigger {
+    background-color: transparent !important;
+    height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 16px !important;
+  }
+  
+  .mat-mdc-select-trigger .mat-mdc-select-value {
+    color: white !important;
+    font-size: 14px !important;
+  }
+  
+  .mat-mdc-select-trigger .mat-mdc-select-arrow-wrapper {
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  .mat-mdc-select-trigger .mat-mdc-select-arrow {
+    color: white !important;
+    font-size: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+  }
+}
+
+// Estilos para el panel de opciones del dropdown
+::ng-deep .mat-mdc-select-panel {
+  background-color: #1e293b !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+  max-height: 200px !important;
+  overflow-y: auto !important;
+  
+  .mat-mdc-option {
+    color: white !important;
+    font-size: 14px !important;
+    padding: 12px 16px !important;
+    min-height: 40px !important;
+    line-height: 1.2 !important;
+    
+    &:hover {
+      background-color: rgba(96, 165, 250, 0.1) !important;
+    }
+    
+    &.mdc-list-item--selected {
+      background-color: rgba(96, 165, 250, 0.2) !important;
+      color: #60a5fa !important;
+    }
+    
+    .mat-pseudo-checkbox {
+      display: none !important;
+    }
+  }
+}

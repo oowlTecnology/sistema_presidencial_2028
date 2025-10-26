@@ -40,6 +40,10 @@ import { User } from '../../../models/user.model';
           <mat-icon>people</mat-icon>
           Gestión de Usuarios
         </button>
+        <button mat-raised-button color="primary" routerLink="/funcionarios" *ngIf="currentUser?.role === 'super_admin' || currentUser?.role === 'funcionarios' || currentUser?.role === 'provincial'">
+          <mat-icon>people_alt</mat-icon>
+          Funcionarios PRM
+        </button>
         <button mat-button (click)="logout()">
           <mat-icon>logout</mat-icon>
           Cerrar Sesión
@@ -741,4 +745,5 @@ export class ProvincialDashboardComponent implements OnInit {
     this.authService.logout()
   }
 }
+
 

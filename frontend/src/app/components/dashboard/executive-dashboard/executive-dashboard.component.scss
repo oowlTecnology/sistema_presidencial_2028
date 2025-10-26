@@ -1370,3 +1370,37 @@
     margin-left: 0 !important;
   }
 }
+
+/* Estilos para el botón de cerrar sesión */
+.logout-section {
+  margin-top: auto;
+  border-top: 1px solid #e4e7ea;
+  padding-top: 16px;
+}
+
+.logout-link {
+  color: #dc3545 !important;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-link:hover {
+  background-color: rgba(220, 53, 69, 0.1) !important;
+  color: #dc3545 !important;
+}
+
+.logout-link mat-icon {
+  color: #dc3545;
+}
+
+.logout-link:hover mat-icon {
+  color: #dc3545;
+}
+
+/* Ajustar el aside para que el logout esté al final */
+.aside-navigation {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 140px);
+  padding: 20px 0;
+}

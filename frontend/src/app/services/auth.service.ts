@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { BehaviorSubject, Observable, tap } from 'rxjs'
+import { Router } from '@angular/router'
 import { environment } from '../../environments/environment'
 import {
   User,
@@ -17,7 +18,7 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null)
   public currentUser$ = this.currentUserSubject.asObservable()
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     // Verificar si hay un token guardado al inicializar el servicio
     const token = localStorage.getItem('token')
     if (token) {
@@ -56,6 +57,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('token')
     this.currentUserSubject.next(null)
+    this.router.navigate(['/login'])
   }
 
   getToken(): string | null {
@@ -80,4 +82,5 @@ export class AuthService {
     return user ? roles.includes(user.role) : false
   }
 }
+
 
