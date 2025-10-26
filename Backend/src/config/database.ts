@@ -10,6 +10,7 @@ import { Elector } from '../entities/Elector';
 import { Padron } from '../entities/Padron';
 import { Foto } from '../entities/Foto';
 import { Fidelizacion } from '../entities/Fidelizacion';
+import { Funcionario } from '../entities/Funcionario';
 
 config();
 
@@ -22,7 +23,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_DATABASE || 'gana_tu_colegio',
   synchronize: false, // Deshabilitado para evitar modificar tablas existentes
   logging: process.env.NODE_ENV === 'development',
-  entities: [User, Provincia, Municipio, Circunscripcion, Colegio, Recinto, Elector, Padron, Foto, Fidelizacion],
+  entities: [User, Provincia, Municipio, Circunscripcion, Colegio, Recinto, Elector, Padron, Foto, Fidelizacion, Funcionario],
   migrations: ['src/migrations/*.ts'],
   subscribers: ['src/subscriber/*.ts'],
   requestTimeout: 30000, // 30 segundos para queries

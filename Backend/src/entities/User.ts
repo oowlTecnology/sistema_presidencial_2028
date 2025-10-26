@@ -14,7 +14,8 @@ export enum UserRole {
   MUNICIPAL = 'municipal',
   CIRCUNSCRIPCION = 'circunscripcion',
   COLEGIO = 'colegio',
-  RECINTO = 'recinto'
+  RECINTO = 'recinto',
+  FUNCIONARIOS = 'funcionarios'
 }
 
 @Entity('users')

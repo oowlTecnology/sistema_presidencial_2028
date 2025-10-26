@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../config/database';
-import { Elector, EstadoElector, EstadoVoto, RecomendacionIA } from '../entities/Elector';
+import { Elector, ElectorStatus, ElectorVoteStatus } from '../entities/Elector';
 import { AuthRequest } from '../middleware/auth';
 import { validate } from 'class-validator';
 
@@ -8,11 +8,10 @@ export class ElectorController {
   async getElectores(req: AuthRequest, res: Response) {
     try {
       const electorRepository = AppDataSource.getRepository(Elector);
-      const currentUser = req.user!;
 
-      // Solo obtener electores del coordinador actual
+      // Obtener electores con relaciones
       const electores = await electorRepository.find({
-        where: { coordinadorId: currentUser.id },
+        relations: ['recinto', 'colegio', 'municipio', 'provincia'],
         order: { createdAt: 'DESC' }
       });
 
@@ -25,46 +24,47 @@ export class ElectorController {
 
   async createElector(req: AuthRequest, res: Response) {
     try {
-      const { nombre, cedula, email, telefono, direccion, edad, estado, estadoVoto, recomendacionIA, notas, movilizador, transporte } = req.body;
-      const currentUser = req.user!;
+      const { firstName, lastName, cedula, estado, voto, recomendacionIA, recintoId, colegioId, municipioId, provinciaId } = req.body;
       const electorRepository = AppDataSource.getRepository(Elector);
 
-      // Verificar si el elector ya existe
-      const existingElector = await electorRepository.findOne({ where: { cedula } });
+      // Verificar si ya existe un elector con esa cédula
+      const existingElector = await electorRepository.findOne({
+        where: { cedula }
+      });
+
       if (existingElector) {
-        return res.status(400).json({ message: 'El elector ya existe con esa cédula' });
+        return res.status(400).json({ message: 'Ya existe un elector con esa cédula' });
       }
 
-      const elector = electorRepository.create({
-        nombre,
+      // Crear nuevo elector
+      const nuevoElector = electorRepository.create({
+        firstName,
+        lastName,
         cedula,
-        email,
-        telefono,
-        direccion,
-        edad,
-        estado: estado || EstadoElector.A_CONFIRMAR,
-        estadoVoto: estadoVoto || EstadoVoto.PENDIENTE,
-        recomendacionIA: recomendacionIA || RecomendacionIA.SOLO_RECORDATORIO,
-        notas,
-        movilizador,
-        transporte: transporte || false,
-        coordinadorId: currentUser.id,
-        isActive: true
+        estado: estado || ElectorStatus.PENDIENTE,
+        voto: voto || ElectorVoteStatus.NO_HA_VOTADO,
+        recomendacionIA,
+        recintoId,
+        colegioId,
+        municipioId,
+        provinciaId
       });
 
-      const errors = await validate(elector);
+      // Validar
+      const errors = await validate(nuevoElector);
       if (errors.length > 0) {
-        return res.status(400).json({
-          message: 'Datos de elector inválidos',
-          errors: errors.map(error => Object.values(error.constraints || {}))
-        });
+        return res.status(400).json({ message: 'Datos de validación incorrectos', errors });
       }
 
-      await electorRepository.save(elector);
-      res.status(201).json({
-        message: 'Elector registrado exitosamente',
-        elector
+      const electorGuardado = await electorRepository.save(nuevoElector);
+
+      // Obtener el elector completo con relaciones
+      const electorCompleto = await electorRepository.findOne({
+        where: { id: electorGuardado.id },
+        relations: ['recinto', 'colegio', 'municipio', 'provincia']
       });
+
+      res.status(201).json(electorCompleto);
     } catch (error) {
       console.error('Error al crear elector:', error);
       res.status(500).json({ message: 'Error interno del servidor' });
@@ -74,36 +74,44 @@ export class ElectorController {
   async updateElector(req: AuthRequest, res: Response) {
     try {
       const { id } = req.params;
-      const { nombre, cedula, email, telefono, direccion, edad, estado, estadoVoto, recomendacionIA, notas, movilizador, transporte } = req.body;
-      const currentUser = req.user!;
+      const { firstName, lastName, cedula, estado, voto, recomendacionIA, recintoId, colegioId, municipioId, provinciaId } = req.body;
       const electorRepository = AppDataSource.getRepository(Elector);
 
       const elector = await electorRepository.findOne({
-        where: { id: parseInt(id), coordinadorId: currentUser.id }
+        where: { id }
       });
 
       if (!elector) {
         return res.status(404).json({ message: 'Elector no encontrado' });
       }
 
-      elector.nombre = nombre || elector.nombre;
+      // Actualizar campos
+      elector.firstName = firstName || elector.firstName;
+      elector.lastName = lastName || elector.lastName;
       elector.cedula = cedula || elector.cedula;
-      elector.email = email || elector.email;
-      elector.telefono = telefono || elector.telefono;
-      elector.direccion = direccion || elector.direccion;
-      elector.edad = edad || elector.edad;
       elector.estado = estado || elector.estado;
-      elector.estadoVoto = estadoVoto || elector.estadoVoto;
+      elector.voto = voto || elector.voto;
       elector.recomendacionIA = recomendacionIA || elector.recomendacionIA;
-      elector.notas = notas || elector.notas;
-      elector.movilizador = movilizador || elector.movilizador;
-      elector.transporte = transporte !== undefined ? transporte : elector.transporte;
+      elector.recintoId = recintoId !== undefined ? recintoId : elector.recintoId;
+      elector.colegioId = colegioId !== undefined ? colegioId : elector.colegioId;
+      elector.municipioId = municipioId !== undefined ? municipioId : elector.municipioId;
+      elector.provinciaId = provinciaId !== undefined ? provinciaId : elector.provinciaId;
 
-      await electorRepository.save(elector);
-      res.json({
-        message: 'Elector actualizado exitosamente',
-        elector
+      // Validar
+      const errors = await validate(elector);
+      if (errors.length > 0) {
+        return res.status(400).json({ message: 'Datos de validación incorrectos', errors });
+      }
+
+      const electorActualizado = await electorRepository.save(elector);
+
+      // Obtener el elector completo con relaciones
+      const electorCompleto = await electorRepository.findOne({
+        where: { id: electorActualizado.id },
+        relations: ['recinto', 'colegio', 'municipio', 'provincia']
       });
+
+      res.json(electorCompleto);
     } catch (error) {
       console.error('Error al actualizar elector:', error);
       res.status(500).json({ message: 'Error interno del servidor' });
@@ -113,11 +121,10 @@ export class ElectorController {
   async deleteElector(req: AuthRequest, res: Response) {
     try {
       const { id } = req.params;
-      const currentUser = req.user!;
       const electorRepository = AppDataSource.getRepository(Elector);
 
       const elector = await electorRepository.findOne({
-        where: { id: parseInt(id), coordinadorId: currentUser.id }
+        where: { id }
       });
 
       if (!elector) {
@@ -135,36 +142,31 @@ export class ElectorController {
   async getEstadisticas(req: AuthRequest, res: Response) {
     try {
       const electorRepository = AppDataSource.getRepository(Elector);
-      const currentUser = req.user!;
 
-      const electores = await electorRepository.find({
-        where: { coordinadorId: currentUser.id, isActive: true }
-      });
+      const electores = await electorRepository.find();
+      
+      const totalElectores = electores.length;
+      const votaron = electores.filter(e => e.voto === ElectorVoteStatus.VOTO).length;
+      const ratificados = electores.filter(e => e.estado === ElectorStatus.RATIFICADO).length;
+      const pendientes = electores.filter(e => e.estado === ElectorStatus.PENDIENTE).length;
+      const aConfirmar = electores.filter(e => e.estado === ElectorStatus.A_CONFIRMAR).length;
 
-      const meta = 15; // Esto debería venir de configuración
-      const captados = electores.length;
-      const votaron = electores.filter(e => e.estadoVoto === EstadoVoto.VOTO).length;
-      const cumplimiento = captados > 0 ? Math.round((votaron / captados) * 100) : 0;
-      const faltan = Math.max(0, meta - captados);
-
-      res.json({
-        meta,
-        captados,
-        cumplimiento,
-        faltan,
+      const estadisticas = {
+        totalElectores,
         votaron,
-        totalElectores: electores.length
-      });
+        noVotaron: totalElectores - votaron,
+        ratificados,
+        pendientes,
+        aConfirmar,
+        porcentajeVotacion: totalElectores > 0 ? ((votaron / totalElectores) * 100).toFixed(2) : 0,
+        porcentajeRatificacion: totalElectores > 0 ? ((ratificados / totalElectores) * 100).toFixed(2) : 0
+      };
+
+      res.json(estadisticas);
     } catch (error) {
       console.error('Error al obtener estadísticas:', error);
       res.status(500).json({ message: 'Error interno del servidor' });
     }
   }
 }
-
-
-
-
-
-
 

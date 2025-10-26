@@ -4,6 +4,7 @@ import userRoutes from './users'
 import personaRoutes from './personas'
 import adminRoutes from './admin'
 import executiveRoutes from './executive'
+import funcionariosRoutes from './funcionarios'
 
 const router = Router()
 
@@ -13,6 +14,7 @@ router.use('/users', userRoutes)
 router.use('/personas', personaRoutes)
 router.use('/admin', adminRoutes)
 router.use('/executive', executiveRoutes)
+router.use('/funcionarios', funcionariosRoutes)
 import provinciasRoutes from './provincias'
 import municipiosRoutes from './municipios'
 import circunscripcionesRoutes from './circunscripciones'

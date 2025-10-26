@@ -110,8 +110,8 @@ export class UserController {
         });
       }
 
-      await userRepository.save(user);
-      const { password: _, ...userWithoutPassword } = user;
+      const savedUser = await userRepository.save(user);
+      const { password: _, ...userWithoutPassword } = Array.isArray(savedUser) ? savedUser[0] : savedUser;
 
       res.status(201).json({
         message: 'Usuario creado exitosamente',
@@ -163,8 +163,8 @@ export class UserController {
       user.address = address || user.address;
       user.isActive = isActive !== undefined ? isActive : user.isActive;
 
-      await userRepository.save(user);
-      const { password: _, ...userWithoutPassword } = user;
+      const updatedUser = await userRepository.save(user);
+      const { password: _, ...userWithoutPassword } = Array.isArray(updatedUser) ? updatedUser[0] : updatedUser;
 
       res.json({
         message: 'Usuario actualizado exitosamente',
