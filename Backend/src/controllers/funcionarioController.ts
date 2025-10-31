@@ -41,7 +41,8 @@ export class FuncionarioController {
         telefono: f.telefono,
         municipio: f.municipio?.Descripcion || 'N/A',
         municipioId: f.municipioId,
-        fotoBase64: f.fotoBase64,
+        // fotoBase64: f.fotoBase64,
+        fotoBase64: null,
         nombreCompleto: f.nombreCompleto
       }));
       
@@ -80,7 +81,8 @@ export class FuncionarioController {
         telefono: f.telefono,
         municipio: f.municipio?.Descripcion || 'N/A',
         municipioId: f.municipioId,
-        fotoBase64: f.fotoBase64,
+        // fotoBase64: f.fotoBase64,
+        fotoBase64: null,
         nombreCompleto: f.nombreCompleto
       }));
 
@@ -135,7 +137,8 @@ export class FuncionarioController {
         telefono: f.telefono,
         municipio: f.municipio?.Descripcion || 'N/A',
         municipioId: f.municipioId,
-        fotoBase64: f.fotoBase64,
+        // fotoBase64: f.fotoBase64,
+        fotoBase64: null,
         nombreCompleto: f.nombreCompleto
       }));
 
@@ -179,7 +182,8 @@ export class FuncionarioController {
         telefono: funcionario.telefono,
         municipio: funcionario.municipio?.Descripcion || 'N/A',
         municipioId: funcionario.municipioId,
-        fotoBase64: funcionario.fotoBase64,
+        // fotoBase64: funcionario.fotoBase64,
+        fotoBase64: null,
         nombreCompleto: funcionario.nombreCompleto
       };
 
