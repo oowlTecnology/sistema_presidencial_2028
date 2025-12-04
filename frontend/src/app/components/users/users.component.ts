@@ -716,7 +716,6 @@ export class UsersComponent implements OnInit {
       role: user.role,
       phoneNumber: user.phoneNumber,
       address: user.address,
-      cedula: user.cedula,
     })
     this.userForm.get('password')?.clearValidators()
     this.userForm.get('password')?.updateValueAndValidity()
