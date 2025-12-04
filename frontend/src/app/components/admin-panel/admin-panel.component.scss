@@ -33,6 +33,14 @@
   font-weight: 500;
 }
 
+.user-photo {
+  width: 40px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
 .loading-container {
   display: flex;
   flex-direction: column;

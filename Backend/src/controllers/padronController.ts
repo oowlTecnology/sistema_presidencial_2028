@@ -4,6 +4,7 @@ import { Padron } from '../entities/Padron'
 // import { Foto } from '../entities/Foto'
 import { Fidelizacion } from '../entities/Fidelizacion'
 import { Colegio } from '../entities/Colegio'
+import { construirUrlFoto } from '../utils/fotoUtils'
 
 export class PadronController {
   // Buscar persona por cédula
@@ -57,8 +58,7 @@ export class PadronController {
           codigo: colegioElectoral.CodigoColegio,
           descripcion: colegioElectoral.Descripcion
         } : null,
-        // foto: foto?.Imagen ? `data:image/jpeg;base64,${foto.Imagen.toString('base64')}` : null,
-        foto: null,
+        foto: construirUrlFoto(persona.cedula),
         fidelizado: !!fidelizacion,
         fidelizadoPor: fidelizacion ? {
           coordinador: `${fidelizacion.coordinador.firstName} ${fidelizacion.coordinador.lastName}`,
@@ -115,8 +115,7 @@ export class PadronController {
         return {
           cedula: persona.cedula,
           nombreCompleto: `${persona.nombres || ''} ${persona.apellido1 || ''} ${persona.apellido2 || ''}`.trim(),
-          // foto: foto?.Imagen ? `data:image/jpeg;base64,${foto.Imagen.toString('base64')}` : null,
-          foto: null,
+          foto: construirUrlFoto(persona.cedula),
           fidelizado: !!fidelizacion,
           fidelizadoPor: fidelizacion ? {
             coordinador: `${fidelizacion.coordinador.firstName} ${fidelizacion.coordinador.lastName}`,

@@ -235,7 +235,7 @@ export class FuncionarioDetailModalComponent {
   }
 
   getDefaultImage(): string {
-    return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSIjNjM2NjcwIi8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iMzciIHI9IjE1IiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMjAgODBDMjAgNjguOTU0MyAyOC45NTQzIDYwIDQwIDYwSDYwQzcxLjA0NTcgNjAgODAgNjguOTU0MyA4MCA4MFY5MEgyMFY4MFoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=';
+    return 'assets/default-avatar.svg';
   }
 
   onImageError(event: any): void {
