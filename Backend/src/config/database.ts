@@ -28,7 +28,7 @@ export const AppDataSource = new DataSource({
   subscribers: ['src/subscriber/*.ts'],
   requestTimeout: 30000, // 30 segundos para queries
   options: {
-    encrypt: false, // Para desarrollo local
+    encrypt: true, // Para desarrollo local
     trustServerCertificate: true, // Para desarrollo local
     connectTimeout: 30000 // 30 segundos para conexión
   }

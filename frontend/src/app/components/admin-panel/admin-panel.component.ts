@@ -47,7 +47,7 @@ import { RecintoService, Recinto } from '../../services/recinto.service';
 })
 export class AdminPanelComponent implements OnInit {
   users: User[] = []
-  displayedColumns: string[] = ['id', 'name', 'email', 'role', 'status', 'actions']
+  displayedColumns: string[] = ['id', 'foto', 'name', 'email', 'role', 'status', 'actions']
   isLoading = false
   selectedUser: User | null = null
   showPasswordDialog = false
@@ -327,5 +327,13 @@ export class AdminPanelComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/'])
+  }
+
+  getDefaultImage(): string {
+    return 'assets/default-avatar.svg';
+  }
+
+  onImageError(event: any): void {
+    event.target.src = this.getDefaultImage();
   }
 }

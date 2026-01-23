@@ -1,9 +1,10 @@
 import { Request, Response } from 'express'
 import { AppDataSource } from '../config/database'
 import { Padron } from '../entities/Padron'
-import { Foto } from '../entities/Foto'
+// import { Foto } from '../entities/Foto'
 import { Fidelizacion } from '../entities/Fidelizacion'
 import { Colegio } from '../entities/Colegio'
+import { construirUrlFoto } from '../utils/fotoUtils'
 
 export class PadronController {
   // Buscar persona por cédula
@@ -17,7 +18,7 @@ export class PadronController {
       }
 
       const padronRepo = AppDataSource.getRepository(Padron)
-      const fotoRepo = AppDataSource.getRepository(Foto)
+      // const fotoRepo = AppDataSource.getRepository(Foto)
       const fidelizacionRepo = AppDataSource.getRepository(Fidelizacion)
       const colegioRepo = AppDataSource.getRepository(Colegio)
 
@@ -29,7 +30,7 @@ export class PadronController {
       }
 
       // Buscar foto
-      const foto = await fotoRepo.findOne({ where: { Cedula: cedula } })
+      // const foto = await fotoRepo.findOne({ where: { Cedula: cedula } })
 
       // Buscar colegio electoral
       let colegioElectoral = null
@@ -57,7 +58,7 @@ export class PadronController {
           codigo: colegioElectoral.CodigoColegio,
           descripcion: colegioElectoral.Descripcion
         } : null,
-        foto: foto?.Imagen ? `data:image/jpeg;base64,${foto.Imagen.toString('base64')}` : null,
+        foto: construirUrlFoto(persona.cedula),
         fidelizado: !!fidelizacion,
         fidelizadoPor: fidelizacion ? {
           coordinador: `${fidelizacion.coordinador.firstName} ${fidelizacion.coordinador.lastName}`,
@@ -85,7 +86,7 @@ export class PadronController {
       const skip = (pageNumber - 1) * limitNumber
 
       const padronRepo = AppDataSource.getRepository(Padron)
-      const fotoRepo = AppDataSource.getRepository(Foto)
+      // const fotoRepo = AppDataSource.getRepository(Foto)
       const fidelizacionRepo = AppDataSource.getRepository(Fidelizacion)
 
       // Obtener total de personas y personas paginadas
@@ -106,24 +107,22 @@ export class PadronController {
         fidelizaciones.map(f => [f.cedula, f])
       )
 
-      // Construir respuesta CON fotos (ahora que está indexada)
-      const resultado = await Promise.all(
-        personas.map(async (persona) => {
-          const foto = await fotoRepo.findOne({ where: { Cedula: persona.cedula } })
-          const fidelizacion = fidelizacionMap.get(persona.cedula)
+      // Construir respuesta SIN fotos (comentado para optimizar)
+      const resultado = personas.map((persona) => {
+        // const foto = await fotoRepo.findOne({ where: { Cedula: persona.cedula } })
+        const fidelizacion = fidelizacionMap.get(persona.cedula)
 
-          return {
-            cedula: persona.cedula,
-            nombreCompleto: `${persona.nombres || ''} ${persona.apellido1 || ''} ${persona.apellido2 || ''}`.trim(),
-            foto: foto?.Imagen ? `data:image/jpeg;base64,${foto.Imagen.toString('base64')}` : null,
-            fidelizado: !!fidelizacion,
-            fidelizadoPor: fidelizacion ? {
-              coordinador: `${fidelizacion.coordinador.firstName} ${fidelizacion.coordinador.lastName}`,
-              fecha: fidelizacion.fechaFidelizacion
-            } : null
-          }
-        })
-      )
+        return {
+          cedula: persona.cedula,
+          nombreCompleto: `${persona.nombres || ''} ${persona.apellido1 || ''} ${persona.apellido2 || ''}`.trim(),
+          foto: construirUrlFoto(persona.cedula),
+          fidelizado: !!fidelizacion,
+          fidelizadoPor: fidelizacion ? {
+            coordinador: `${fidelizacion.coordinador.firstName} ${fidelizacion.coordinador.lastName}`,
+            fecha: fidelizacion.fechaFidelizacion
+          } : null
+        }
+      })
 
       res.json({
         data: resultado,

@@ -22,7 +22,7 @@ export const AppDataSource = new DataSource({
   migrations: ['src/migrations/*.ts'],
   subscribers: ['src/subscriber/*.ts'],
   options: {
-    encrypt: false, // Para desarrollo local
+    encrypt: true, // Para desarrollo local
     trustServerCertificate: true // Para desarrollo local
   }
 });

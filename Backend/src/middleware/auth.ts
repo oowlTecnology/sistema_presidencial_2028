@@ -30,6 +30,7 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
     req.user = user;
     next();
   } catch (error) {
+    console.error('Error en authenticateToken:', error);
     return res.status(403).json({ message: 'Token inválido' });
   }
 };

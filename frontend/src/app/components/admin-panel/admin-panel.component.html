@@ -27,6 +27,19 @@
               <td mat-cell *matCellDef="let user">{{ user.id }}</td>
             </ng-container>
 
+            <!-- Foto Column -->
+            <ng-container matColumnDef="foto">
+              <th mat-header-cell *matHeaderCellDef>Foto</th>
+              <td mat-cell *matCellDef="let user">
+                <img 
+                  [src]="user.foto || getDefaultImage()" 
+                  [alt]="user.firstName + ' ' + user.lastName"
+                  class="user-photo"
+                  (error)="onImageError($event)"
+                />
+              </td>
+            </ng-container>
+
             <!-- Name Column -->
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef>Nombre</th>

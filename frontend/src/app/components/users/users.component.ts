@@ -74,6 +74,19 @@ import { RecintoService, Recinto } from '../../services/recinto.service'
               *ngIf="!isLoading; else loadingTemplate"
             >
               <table mat-table [dataSource]="users" class="users-table">
+                <!-- Foto Column -->
+                <ng-container matColumnDef="foto">
+                  <th mat-header-cell *matHeaderCellDef>Foto</th>
+                  <td mat-cell *matCellDef="let user">
+                    <img 
+                      [src]="user.foto || getDefaultImage()" 
+                      [alt]="user.firstName + ' ' + user.lastName"
+                      class="user-photo"
+                      (error)="onImageError($event)"
+                    />
+                  </td>
+                </ng-container>
+
                 <!-- Nombre Column -->
                 <ng-container matColumnDef="name">
                   <th mat-header-cell *matHeaderCellDef>Nombre</th>
@@ -357,6 +370,12 @@ import { RecintoService, Recinto } from '../../services/recinto.service'
             <input matInput formControlName="address" />
           </mat-form-field>
 
+          <!-- Cédula -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Cédula</mat-label>
+            <input matInput formControlName="cedula" maxlength="11" />
+          </mat-form-field>
+
           <div class="dialog-actions">
             <button mat-button type="button" (click)="closeDialog()">
               Cancelar
@@ -456,6 +475,14 @@ import { RecintoService, Recinto } from '../../services/recinto.service'
         color: #d32f2f;
       }
 
+      .user-photo {
+        width: 40px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+      }
+
       .loading-container {
         display: flex;
         flex-direction: column;
@@ -545,6 +572,7 @@ export class UsersComponent implements OnInit {
   recintos: Recinto[] = []
   users: User[] = []
   displayedColumns: string[] = [
+    'foto',
     'name',
     'email',
     'role',
@@ -587,6 +615,7 @@ export class UsersComponent implements OnInit {
       recintoId: [''],
       phoneNumber: [''],
       address: [''],
+      cedula: [''],
     })
   }
 
@@ -932,6 +961,14 @@ export class UsersComponent implements OnInit {
     if (this.currentUser) {
       window.location.href = `/dashboard/${this.currentUser.role}`
     }
+  }
+
+  getDefaultImage(): string {
+    return 'assets/default-avatar.svg';
+  }
+
+  onImageError(event: any): void {
+    event.target.src = this.getDefaultImage();
   }
 }
 
