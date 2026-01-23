@@ -1,0 +1,44 @@
+<div class="electoral-content" *ngIf="!loading() && electoralData()">
+  <app-stats [data]="electoralData()!"></app-stats>
+  
+  <div class="main-grid">
+    <div class="map-section">
+      <app-map [regions]="electoralData()!.regions"></app-map>
+      
+      <!-- Sugerencias Inteligentes dentro del card del mapa -->
+      <div class="suggestions-section" *ngIf="sugerencias().length > 0">
+        <div class="suggestions-header">
+          <mat-icon class="ai-icon">psychology</mat-icon>
+          <h3>Sugerencias Inteligentes</h3>
+        </div>
+        <div class="suggestions-compact">
+          <div *ngFor="let sugerencia of sugerencias()" 
+               class="suggestion-compact" 
+               [ngClass]="'suggestion-' + sugerencia.tipo">
+            <mat-icon class="suggestion-icon-small">{{ sugerencia.icono }}</mat-icon>
+            <div class="suggestion-text">
+              <strong>{{ sugerencia.titulo }}:</strong> {{ sugerencia.descripcion }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="charts-section">
+      <app-charts [candidates]="electoralData()!.candidates"></app-charts>
+    </div>
+  </div>
+
+  <div class="alerts-section" *ngIf="electoralData()!.alerts.length > 0">
+    <div class="alert" *ngFor="let alert of electoralData()!.alerts" [class]="'alert-' + alert.type">
+      <span class="alert-icon">⚠️</span>
+      <span class="alert-message">{{ alert.message }}</span>
+      <span class="alert-count">{{ alert.count }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="loading-spinner" *ngIf="loading()">
+  <mat-spinner diameter="60"></mat-spinner>
+  <h2>Cargando datos electorales...</h2>
+</div>

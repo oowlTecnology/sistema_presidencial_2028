@@ -1,0 +1,14 @@
+<div class="map-container">
+  <div class="map-header">
+    <h2>Mapa Electoral</h2>
+    <button class="btn-fullscreen">⛶</button>
+  </div>
+  <div id="electoral-map" class="map-view"></div>
+  <div class="map-legend">
+    <div class="legend-item" *ngFor="let region of regions">
+      <span class="legend-color" [style.background-color]="region.color"></span>
+      <span class="legend-label">{{ region.name }}</span>
+      <span class="legend-value">{{ region.percentage }}%</span>
+    </div>
+  </div>
+</div>

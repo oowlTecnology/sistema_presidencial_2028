@@ -1,0 +1,237 @@
+.colegio-detalle-content {
+  padding: 0;
+}
+
+.content-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  .btn-back {
+    background: white;
+    border: 1px solid #d8dbe0;
+    color: #321fdb;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+
+    &:hover {
+      background: #f0f3f5;
+    }
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #303c54;
+  }
+}
+
+.candidate-banner {
+  background: #321fdb;
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+  .candidate-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: white;
+    color: #321fdb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  .candidate-info {
+    flex: 1;
+
+    h2 {
+      margin: 0 0 0.5rem 0;
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.125rem;
+    }
+  }
+
+  .candidate-stats {
+    text-align: right;
+
+    .stat-large {
+      font-size: 3rem;
+      font-weight: 700;
+      color: white;
+      line-height: 1;
+    }
+
+    .stat-label {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stats-cards {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #d8dbe0;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-icon {
+    font-size: 2.5rem;
+  }
+
+  .stat-content {
+    h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.875rem;
+      color: #9ca3af;
+      font-weight: 600;
+    }
+
+    .stat-value {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #321fdb;
+    }
+  }
+}
+
+.votantes-section,
+.chart-section {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #d8dbe0;
+
+  h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+}
+
+.votantes-section {
+  grid-column: span 2;
+}
+
+.votantes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.votante-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #1e2a3a;
+  border-radius: 8px;
+
+  .votante-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #321fdb;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  .votante-info {
+    flex: 1;
+
+    h4 {
+      margin: 0 0 0.25rem 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: #9ca3af;
+    }
+  }
+
+  .votante-estado {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+
+    &.confirmado {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    &.votó {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+  }
+}
+
+.chart-section {
+  .chart-wrapper {
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

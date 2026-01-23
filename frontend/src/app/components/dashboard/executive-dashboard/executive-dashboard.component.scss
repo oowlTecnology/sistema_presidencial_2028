@@ -1,8 +1,22 @@
 .executive-dashboard {
-  min-height: 100vh;
-  background: #ebedef;
-  display: flex;
-  flex-direction: column;
+  background: transparent;
+
+  // Ocultar toolbar y sidebar del dashboard ejecutivo ya que el layout los proporciona
+  .toolbar-executive,
+  .dashboard-aside {
+    display: none;
+  }
+
+  .dashboard-layout {
+    margin-left: 0;
+    background: transparent;
+  }
+
+  .dashboard-content {
+    margin-left: 0 !important;
+    padding: 20px;
+    background: transparent;
+  }
 }
 
 .toolbar-executive {

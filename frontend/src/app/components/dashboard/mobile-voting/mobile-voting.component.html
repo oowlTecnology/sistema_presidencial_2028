@@ -1,0 +1,133 @@
+<div class="mobile-voting-content">
+  <div class="content-header">
+    <button class="btn-back" (click)="goBack()" *ngIf="currentView() !== 'voters'">
+      ← Atrás
+    </button>
+    <h2>{{ currentView() === 'voters' ? 'Mi Lista' : currentView() === 'candidates' ? 'Ruta Día D' : 'Confirmar Voto' }}</h2>
+  </div>
+
+  <div class="voters-view" *ngIf="currentView() === 'voters'">
+    <div class="view-header">
+      <div class="mesa-info">
+        <h2>{{ mesa() }}</h2>
+        <p>{{ voters().length }} votantes</p>
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Buscar votante...">
+      </div>
+    </div>
+
+    <div class="voters-list">
+      <div class="voter-card" 
+           *ngFor="let voter of voters()" 
+           (click)="selectVoter(voter)"
+           [class.confirmed]="voter.status === 'confirmed'"
+           [class.voted]="voter.status === 'voted'">
+        <div class="voter-avatar">
+          {{ voter.name.charAt(0) }}
+        </div>
+        <div class="voter-info">
+          <h3>{{ voter.name }}</h3>
+          <p>{{ voter.mesa }}</p>
+        </div>
+        <div class="voter-status">
+          <span class="status-badge" [class]="'status-' + voter.status">
+            {{ voter.status === 'confirmed' ? 'Confirmado' : voter.status === 'voted' ? 'Votó' : 'Pendiente' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-stats">
+      <div class="stat-item">
+        <span class="stat-label">Confirmados</span>
+        <span class="stat-value">{{ getConfirmedCount() }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Votaron</span>
+        <span class="stat-value">{{ getVotedCount() }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Pendientes</span>
+        <span class="stat-value">{{ getPendingCount() }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="candidates-view" *ngIf="currentView() === 'candidates'">
+    <div class="selected-voter-info">
+      <div class="voter-avatar-large">
+        {{ selectedVoter()?.name?.charAt(0) || '' }}
+      </div>
+      <h2>{{ selectedVoter()?.name }}</h2>
+      <p>Selecciona un candidato</p>
+    </div>
+
+    <div class="candidates-list">
+      <div class="candidate-card" 
+           *ngFor="let candidate of candidates()" 
+           (click)="selectCandidate(candidate)">
+        <div class="candidate-avatar" [style.background-color]="candidate.color">
+          {{ candidate.name.charAt(0) }}
+        </div>
+        <div class="candidate-info">
+          <h3>{{ candidate.name }}</h3>
+          <p>{{ candidate.party }}</p>
+        </div>
+        <div class="candidate-percentage">
+          {{ candidate.percentage }}%
+        </div>
+        <button class="btn-select" [style.background-color]="candidate.color">
+          Seleccionar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="confirm-view" *ngIf="currentView() === 'confirm'">
+    <div class="confirm-header">
+      <h2>Confirmar Voto</h2>
+    </div>
+
+    <div class="confirm-content">
+      <div class="voter-confirmation">
+        <div class="voter-avatar-large">
+          {{ selectedVoter()?.name?.charAt(0) || '' }}
+        </div>
+        <h3>{{ selectedVoter()?.name }}</h3>
+        <p>{{ selectedVoter()?.mesa }}</p>
+      </div>
+
+      <div class="vote-arrow">↓</div>
+
+      <div class="candidate-confirmation">
+        <div class="candidate-avatar-large" [style.background-color]="selectedCandidate()?.color">
+          {{ selectedCandidate()?.name?.charAt(0) || '' }}
+        </div>
+        <h3>{{ selectedCandidate()?.name }}</h3>
+        <p>{{ selectedCandidate()?.party }}</p>
+        <div class="candidate-percentage-large">
+          {{ selectedCandidate()?.percentage }}%
+        </div>
+      </div>
+
+      <div class="confirm-details">
+        <div class="detail-row">
+          <span>Mesa:</span>
+          <span>{{ selectedVoter()?.mesa }}</span>
+        </div>
+        <div class="detail-row">
+          <span>Hora:</span>
+          <span>{{ getCurrentTime() }}</span>
+        </div>
+      </div>
+
+      <button class="btn-confirm" (click)="confirmVote()">
+        Confirmar Voto
+      </button>
+      <button class="btn-cancel" (click)="goBack()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>

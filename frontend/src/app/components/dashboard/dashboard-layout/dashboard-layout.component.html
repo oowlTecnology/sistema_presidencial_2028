@@ -1,0 +1,124 @@
+<div class="executive-dashboard">
+  <mat-toolbar color="primary" class="toolbar-executive">
+    <div class="toolbar-content">
+      <div class="toolbar-left">
+        <button mat-icon-button class="sidebar-toggle" (click)="toggleSidebar()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <mat-icon class="dashboard-icon">dashboard</mat-icon>
+        <span class="title">Dashboard Ejecutivo</span>
+        <span class="subtitle">Gana tu Colegio 2028</span>
+      </div>
+      <div class="toolbar-right">
+        <button mat-raised-button color="accent" routerLink="/admin" *ngIf="currentUser?.role === 'super_admin'">
+          <mat-icon>admin_panel_settings</mat-icon>
+          Panel Admin
+        </button>
+        <button mat-raised-button color="primary" routerLink="/funcionarios" *ngIf="currentUser?.role === 'super_admin' || currentUser?.role === 'funcionarios'">
+          <mat-icon>people</mat-icon>
+          Funcionarios PRM
+        </button>
+        <button mat-button (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <div class="dashboard-layout">
+    <aside class="dashboard-aside" [class.collapsed]="sidebarCollapsed()">
+      <div class="aside-header">
+        <div class="user-info" *ngIf="!sidebarCollapsed()">
+          <div class="user-avatar">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+          <div class="user-details">
+            <h3>{{ currentUser?.firstName }} {{ currentUser?.lastName }}</h3>
+            <p class="user-role">Vista Ejecutiva</p>
+          </div>
+        </div>
+        <div class="user-info-collapsed" *ngIf="sidebarCollapsed()">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+      </div>
+
+      <nav class="aside-navigation">
+        <div class="nav-section">
+          <h4 *ngIf="!sidebarCollapsed()">Navegación</h4>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a routerLink="/dashboard/ejecutivo" routerLinkActive="active" class="nav-link">
+                <mat-icon>dashboard</mat-icon>
+                <span *ngIf="!sidebarCollapsed()">Resumen General</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-section">
+          <h4 *ngIf="!sidebarCollapsed()">Módulos Electorales</h4>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a routerLink="/dashboard/dashboard-electoral" routerLinkActive="active" class="nav-link">
+                <mat-icon>poll</mat-icon>
+                <span *ngIf="!sidebarCollapsed()">Gestión Electoral</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/dashboard/comparativa" routerLinkActive="active" class="nav-link">
+                <mat-icon>compare_arrows</mat-icon>
+                <span *ngIf="!sidebarCollapsed()">Comparativa 2024</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/dashboard/mesa-situacional" routerLinkActive="active" class="nav-link">
+                <mat-icon>warning</mat-icon>
+                <span *ngIf="!sidebarCollapsed()">Mesa Situacional</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/dashboard/colegio-detalle" routerLinkActive="active" class="nav-link">
+                <mat-icon>school</mat-icon>
+                <span *ngIf="!sidebarCollapsed()">Colegio Detalle</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/dashboard/mobile-voting" routerLinkActive="active" class="nav-link">
+                <mat-icon>how_to_vote</mat-icon>
+                <span *ngIf="!sidebarCollapsed()">Votación Móvil</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-section">
+          <h4 *ngIf="!sidebarCollapsed()">Acciones Rápidas</h4>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a routerLink="/users" class="nav-link">
+                <mat-icon>people_alt</mat-icon>
+                <span *ngIf="!sidebarCollapsed()">Gestionar Usuarios</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-section logout-section">
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a class="nav-link logout-link" (click)="logout()">
+                <mat-icon>logout</mat-icon>
+                <span *ngIf="!sidebarCollapsed()">Cerrar Sesión</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <div class="dashboard-content" [class.sidebar-collapsed]="sidebarCollapsed()">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

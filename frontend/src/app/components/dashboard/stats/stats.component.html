@@ -1,0 +1,45 @@
+<div class="stats-container" *ngIf="data">
+  <div class="stat-card main-stat">
+    <div class="stat-icon">📊</div>
+    <div class="stat-content">
+      <h3>Total de Votos</h3>
+      <div class="stat-value">
+        {{ data.totalVotes.toLocaleString() }} 
+        <span class="stat-goal">/ {{ data.goalVotes.toLocaleString() }}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="progressPercentage"></div>
+      </div>
+      <p class="stat-description">
+        {{ remainingVotes.toLocaleString() }} votos restantes
+      </p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">📈</div>
+    <div class="stat-content">
+      <h3>Porcentaje Actual</h3>
+      <div class="stat-value">{{ data.currentPercentage }}%</div>
+      <p class="stat-description">Del objetivo total</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">🗺️</div>
+    <div class="stat-content">
+      <h3>Regiones Activas</h3>
+      <div class="stat-value">{{ data.regions.length }}</div>
+      <p class="stat-description">Zonas electorales</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">👥</div>
+    <div class="stat-content">
+      <h3>Candidatos</h3>
+      <div class="stat-value">{{ data.candidates.length }}</div>
+      <p class="stat-description">En competencia</p>
+    </div>
+  </div>
+</div>

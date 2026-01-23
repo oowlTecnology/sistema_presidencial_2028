@@ -1,0 +1,72 @@
+<div class="colegio-detalle-content">
+  <div class="content-header">
+    <button class="btn-back">← Volver</button>
+    <h2>{{ colegioData().nombre }}</h2>
+  </div>
+
+  <div class="candidate-banner">
+    <div class="candidate-avatar">
+      {{ colegioData().candidato.charAt(0) }}
+    </div>
+    <div class="candidate-info">
+      <h2>{{ colegioData().candidato }}</h2>
+      <p>Candidato Principal</p>
+    </div>
+    <div class="candidate-stats">
+      <div class="stat-large">{{ colegioData().porcentaje }}%</div>
+      <div class="stat-label">de aprobación</div>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div class="stats-cards">
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-content">
+          <h3>Confirmados</h3>
+          <p class="stat-value">325</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🗳️</div>
+        <div class="stat-content">
+          <h3>Votaron</h3>
+          <p class="stat-value">125</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-content">
+          <h3>Pendientes</h3>
+          <p class="stat-value">50</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="votantes-section">
+      <h3>Últimos Votantes</h3>
+      <div class="votantes-list">
+        <div *ngFor="let votante of votantes()" class="votante-item">
+          <div class="votante-avatar">{{ votante.nombre.charAt(0) }}</div>
+          <div class="votante-info">
+            <h4>{{ votante.nombre }}</h4>
+            <p>{{ votante.hora }}</p>
+          </div>
+          <span class="votante-estado" [class]="votante.estado.toLowerCase()">
+            {{ votante.estado }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <h3>Distribución de Votos</h3>
+      <div class="chart-wrapper">
+        <canvas baseChart
+          [data]="pieChartData()"
+          [type]="pieChartType">
+        </canvas>
+      </div>
+    </div>
+  </div>
+</div>

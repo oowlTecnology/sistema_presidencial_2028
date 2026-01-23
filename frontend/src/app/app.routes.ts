@@ -20,6 +20,7 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     canActivate: [authGuard],
+    loadComponent: () => import('./components/dashboard/dashboard-layout/dashboard-layout.component').then(m => m.DashboardLayoutComponent),
     children: [
       {
         path: 'ejecutivo',
@@ -55,6 +56,30 @@ export const routes: Routes = [
         path: 'funcionarios',
         loadComponent: () => import('./components/funcionarios/funcionarios.component').then(m => m.FuncionariosComponent),
         canActivate: [roleGuard(['super_admin', 'funcionarios'])]
+      },
+      {
+        path: 'dashboard-electoral',
+        loadComponent: () => import('./components/dashboard/dashboard-electoral/dashboard-electoral.component').then(m => m.DashboardElectoralComponent)
+      },
+      {
+        path: 'comparativa',
+        loadComponent: () => import('./components/dashboard/comparativa/comparativa.component').then(m => m.ComparativaComponent)
+      },
+      {
+        path: 'mesa-situacional',
+        loadComponent: () => import('./components/dashboard/mesa-situacional/mesa-situacional.component').then(m => m.MesaSituacionalComponent)
+      },
+      {
+        path: 'colegio-detalle',
+        loadComponent: () => import('./components/dashboard/colegio-detalle/colegio-detalle.component').then(m => m.ColegioDetalleComponent)
+      },
+      {
+        path: 'mobile-voting',
+        loadComponent: () => import('./components/dashboard/mobile-voting/mobile-voting.component').then(m => m.MobileVotingComponent)
+      },
+      {
+        path: 'mobile-voting/:mesa',
+        loadComponent: () => import('./components/dashboard/mobile-voting/mobile-voting.component').then(m => m.MobileVotingComponent)
       }
     ]
   },

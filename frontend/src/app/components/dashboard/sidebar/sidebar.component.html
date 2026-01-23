@@ -1,0 +1,39 @@
+<aside class="sidebar" [class.collapsed]="isCollapsed()">
+  <div class="sidebar-header">
+    <div class="logo" *ngIf="!isCollapsed()">
+      <span class="logo-icon">🗳️</span>
+      <h2>Sistema Electoral</h2>
+    </div>
+    <button class="toggle-btn" (click)="toggleSidebar()">
+      {{ isCollapsed() ? '→' : '←' }}
+    </button>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <h3 *ngIf="!isCollapsed()">Vistas Desktop</h3>
+      <a *ngFor="let item of getDesktopItems()" 
+         [routerLink]="item.route"
+         routerLinkActive="active"
+         class="nav-item">
+        <span class="nav-icon">{{ item.icon }}</span>
+        <span class="nav-label" *ngIf="!isCollapsed()">{{ item.label }}</span>
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <h3 *ngIf="!isCollapsed()">Vistas Móviles</h3>
+      <a *ngFor="let item of getMobileItems()" 
+         [routerLink]="item.route"
+         routerLinkActive="active"
+         class="nav-item">
+        <span class="nav-icon">{{ item.icon }}</span>
+        <span class="nav-label" *ngIf="!isCollapsed()">{{ item.label }}</span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer" *ngIf="!isCollapsed()">
+    <p>v1.0.0</p>
+  </div>
+</aside>

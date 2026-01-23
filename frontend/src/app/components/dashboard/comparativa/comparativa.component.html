@@ -1,0 +1,77 @@
+<div class="comparativa-content">
+  <div class="content-header">
+    <h2>Comparativa 2024</h2>
+    <div class="header-actions">
+      <button class="btn-export">📥 Exportar</button>
+      <button class="btn-filter">🔍 Filtrar</button>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div class="heatmap-section">
+      <div class="section-header">
+        <h2>Mapa de Calor Electoral</h2>
+        <p>Distribución de votos por región</p>
+      </div>
+      <div class="heatmap-container">
+        <div id="svg-heatmap-container"></div>
+      </div>
+      <div class="heatmap-legend">
+        <span>Bajo</span>
+        <div class="legend-gradient"></div>
+        <span>Alto</span>
+      </div>
+    </div>
+
+    <div class="stats-section">
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-content">
+          <h3>Participación Total</h3>
+          <p class="stat-value">78.5%</p>
+          <span class="stat-change positive">+5.2%</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🗳️</div>
+        <div class="stat-content">
+          <h3>Votos Válidos</h3>
+          <p class="stat-value">95.3%</p>
+          <span class="stat-change positive">+2.1%</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">⚠️</div>
+        <div class="stat-content">
+          <h3>Votos Nulos</h3>
+          <p class="stat-value">4.7%</p>
+          <span class="stat-change negative">-1.3%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison-table">
+      <h3>Comparativa por Región</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Región</th>
+            <th>2024</th>
+            <th>2020</th>
+            <th>Diferencia</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let region of regions">
+            <td>{{ region.name }}</td>
+            <td>{{ region.value }}%</td>
+            <td>{{ region.value - 5 }}%</td>
+            <td class="positive">+5%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

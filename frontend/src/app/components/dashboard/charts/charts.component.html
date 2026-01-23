@@ -1,0 +1,46 @@
+<div class="charts-container">
+  <div class="chart-section" *ngIf="isBrowser()">
+    <div class="chart-header">
+      <h2>Distribución de Votos</h2>
+    </div>
+    <div class="chart-wrapper">
+      <canvas baseChart
+        [data]="pieChartData()"
+        [type]="pieChartType"
+        [options]="pieChartOptions">
+      </canvas>
+    </div>
+  </div>
+
+  <div class="chart-section" *ngIf="isBrowser()">
+    <div class="chart-header">
+      <h2>Comparativa por Candidato</h2>
+    </div>
+    <div class="chart-wrapper">
+      <canvas baseChart
+        [data]="barChartData()"
+        [type]="barChartType"
+        [options]="barChartOptions">
+      </canvas>
+    </div>
+  </div>
+
+  <div class="candidates-list">
+    <h3>Resultados Detallados</h3>
+    <div class="candidate-item" *ngFor="let candidate of candidates">
+      <div class="candidate-info">
+        <div class="candidate-avatar" [style.background-color]="candidate.color">
+          {{ candidate.name.charAt(0) }}
+        </div>
+        <div class="candidate-details">
+          <h4>{{ candidate.name }}</h4>
+          <p>{{ candidate.party }}</p>
+        </div>
+      </div>
+      <div class="candidate-stats">
+        <div class="percentage">{{ candidate.percentage }}%</div>
+        <div class="votes">{{ candidate.votes.toLocaleString() }} votos</div>
+      </div>
+    </div>
+  </div>
+</div>
