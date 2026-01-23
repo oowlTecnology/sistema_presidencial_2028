@@ -1,13 +1,11 @@
 import { Component, OnInit, AfterViewInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { StatsComponent } from '../stats/stats.component';
-import { MapComponent } from '../map/map.component';
 import * as L from 'leaflet';
 
 @Component({
   selector: 'app-mesa-situacional',
   standalone: true,
-  imports: [CommonModule, StatsComponent, MapComponent],
+  imports: [CommonModule],
   templateUrl: './mesa-situacional.component.html',
   styleUrls: ['./mesa-situacional.component.scss']
 })
